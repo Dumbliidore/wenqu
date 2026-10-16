@@ -2,6 +2,28 @@
 
 「问渠那得清如许，为有源头活水来」—— 一个基于 Django 6.1 + django-unfold 的在线教育平台演示项目，包含公开课程、课程机构、授课教师、学员中心四个板块，以及一套 unfold 主题的后台。
 
+## 界面预览
+
+首页轮播与四大板块入口：
+
+![首页](assets/index.png)
+
+公开课列表，支持最新 / 最热门 / 参与人数排序，右侧为热门课程推荐：
+
+![公开课列表](assets/course_list.png)
+
+授课教师列表与讲师排行榜：
+
+![授课教师列表](assets/teacher_list.png)
+
+授课机构列表，支持按机构类别与所在地区筛选：
+
+![授课机构列表](assets/org_list.png)
+
+后台采用 django-unfold 主题，侧栏按用户 / 课程 / 机构 / 用户行为分组：
+
+![后台课程管理](assets/admin.png)
+
 ## 技术栈
 
 | 组件                            | 版本          | 用途                                     |
@@ -85,10 +107,3 @@ DJANGO_SETTINGS_MODULE=settings.prod uv run gunicorn wsgi:application --bind 0.0
 ```
 
 静态文件由 WhiteNoise 的 `CompressedStaticFilesStorage` 提供；`prod` 配置默认开启 HTTPS 跳转与 HSTS，放在 Nginx 之后时按需设 `USE_X_FORWARDED_HOST`、`SECURE_SSL_REDIRECT`。
-
-## 已知边界
-
-- CKEditor 5 的图片上传、真实 SMTP 投递、PostgreSQL 迁移这三条路径没在真机上跑过（本地用 SQLite 与控制台邮件验证）。
-- `CAPTCHA_TEST_MODE` 只在 `test.py` 打开，生产下关闭；开发环境注册仍需填验证码。
-- `operation/0003` 迁移给收藏与学习记录加了唯一约束，执行前会先合并历史重复行（按 id 保留最早的一条），被删掉的重复记录不可还原；演示库里实测有 1 条重复收藏。
-- `seed_demo.py` 里的机构名（慕课网、鱼C科技、北大计算机系等）是演示数据里的「入驻机构」，不是本站品牌。
