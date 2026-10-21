@@ -15,7 +15,7 @@ from .models import CityDict, CourseOrg, Teacher
 # 演示库有 8 机构 / 12 讲师，每页 5 条就能出分页条。
 # 机构课程页只放 1 条：单机构最多 4 门课，放 1 条才看得到分页条。
 ORG_PAGE_SIZE = 5
-ORG_COURSE_PAGE_SIZE = 1
+ORG_COURSE_PAGE_SIZE = 3
 TEACHER_PAGE_SIZE = 5
 TOP_TEACHER_NUMS = 3
 ORG_TOP_COURSE_NUMS = 2

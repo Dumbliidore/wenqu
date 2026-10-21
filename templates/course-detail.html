@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block title %}课程详情 - 问渠在线{% endblock %}
 {% load static %}
+{% block custom_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/course-detail.css' %}">
+{% endblock %}
 {% block custom_bread %}
 	<section>
 	<div class="wp">
 		<div class="crumbs">
 			<ul>
 				<li><a href="{% url 'index' %}">首页</a>></li>
-                <li><a href="{% url 'course:course_list' %}">公开课程</a>></li>
+                <li><a href="{% url 'course:course_list' %}">公开课</a>></li>
 				<li>课程详情</li>
 			</ul>
 		</div>
@@ -16,14 +19,14 @@
 {% endblock %}
 
 {% block content %}
-	<section>
+	<section class="page-course-detail">
 	<div class="wp">
 		<div class="groupPurchase_detail detail">
 			<div class="toppro">
 				<div class="left">
 					<div class="picbox">
 						<div class="tb-booth tb-pic">
-							<img width="440" height="445" src="{{ MEDIA_URL }}{{ course.image }}" class="jqzoom" />
+							<img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}" />
 						</div>
 
 					</div>
@@ -35,20 +38,20 @@
 							<span class="fr">学习人数：{{ course.students }}</span>
 						</div>
 						<ul class="parameter">
-							<li><span class="pram word3">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</span><span>{{ course.learn_times }}</span></li>
-                            <li><span class="pram word3">章&nbsp;节&nbsp;数：</span><span>{{ course.get_zj_nums }}</span></li>
-                            <li><span class="pram word3">课程类别：</span><span title="">{{ course.category }}</span></li>
+							<li><span class="pram word3">时长：</span><span>{{ course.learn_times }}</span></li>
+							<li><span class="pram word3">章节数：</span><span>{{ course.get_zj_nums }}</span></li>
+							<li><span class="pram word3">课程类别：</span><span>{{ course.category }}</span></li>
 							<li class="piclist"><span class="pram word4">学习用户：</span>
 									{% for user_course in course.get_learn_users %}
-                                    <span class="pic"><img width="40" height="40" src="{{ MEDIA_URL }}{{ user_course.user.image }}"/></span>
+									<span class="pic"><img src="{{ MEDIA_URL }}{{ user_course.user.image }}" alt="{{ user_course.user.name }}"/></span>
 									{% endfor %}
 							</li>
 						</ul>
 						<div class="btns">
-							<div class="btn colectgroupbtn"  id="jsLeftBtn">
+							<div class="btn colectgroupbtn{% if has_fav_course %} collected{% endif %}"  id="jsLeftBtn">
                                   {% if has_fav_course %}已收藏{% else %}收藏{% endif %}
                             </div>
-                                <div class="buy btn"><a style="color: white" href="{% url 'course:course_info' course.id %}">开始学习</a></div>
+							<div class="buy btn"><a href="{% url 'course:course_info' course.id %}">开始学习</a></div>
 						</div>
 					</div>
 				</div>
@@ -59,24 +62,26 @@
 					</div>
 					<div class="pic">
                         <a href="{% url 'org:org_home' course.course_org.id %}">
-                            <img width="150" height="80" src="{{ MEDIA_URL }}{{ course.course_org.image }}"/>
+                            <img src="{{ MEDIA_URL }}{{ course.course_org.image }}" alt="{{ course.course_org.name }}"/>
                         </a>
                     </div>
 					<a href="{% url 'org:org_home' course.course_org.id %}">
                         <h2 class="center" title="{{ course.course_org.name }}">{{ course.course_org.name }}</h2>
                     </a>
-					<div class="btn" id="jsRightBtn">
+					<div class="btn{% if has_fav_org %} collected{% endif %}" id="jsRightBtn">
                          {% if has_fav_org %}已收藏{% else %}收藏{% endif %}
                     </div>
 					<div class="clear">
 						<ul>
                             <li>
-                                <span>课 &nbsp;程&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   {{ course.course_org.course_nums }}</span>
+                                <span class="lbl">课程数</span><span class="val">{{ course.course_org.course_nums }}</span>
                             </li>
                             <li>
-                                <span>教 &nbsp;师&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  {{ course.course_org.get_teacher_nums }}</span>
+                                <span class="lbl">教师数</span><span class="val">{{ course.course_org.get_teacher_nums }}</span>
                             </li>
-							<li>所在地区：&nbsp;&nbsp;{{ course.course_org.address }}</li>
+							<li>
+                                <span class="lbl">所在地区</span><span class="val">{{ course.course_org.address }}</span>
+                            </li>
 						</ul>
 					</div>
 				</div>
@@ -84,7 +89,7 @@
 		</div>
 	</div>
 </section>
-    <section>
+    <section class="page-course-detail">
 	<div class="wp">
 		<div class="list groupPurchase_detail_pro">
 			<div class="left layout">
@@ -99,13 +104,6 @@
 					{% endautoescape %}
 
 				</div>
-				<div class="tab_cont tab_cont2" >
-					<div class="comment">
-						<div class="comenlist">
-
-	                    </div>
-					</div>
-				</div>
 			</div>
 			<div class="right layout">
 				<div class="head">相关课程推荐</div>
@@ -113,16 +111,18 @@
 					{% for relate_course in relate_courses %}
                         <dl>
                             <dt>
-                                <a target="_blank" href="{% url 'course:course_detail' relate_course.id %}">
-                                    <img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ relate_course.image }}"/>
+                                <a target="_blank" rel="noopener" href="{% url 'course:course_detail' relate_course.id %}">
+                                    <img class="scrollLoading" src="{{ MEDIA_URL }}{{ relate_course.image }}" alt="{{ relate_course.name }}"/>
                                 </a>
                             </dt>
                             <dd>
-                                <a target="_blank" href="{% url 'course:course_detail' relate_course.id %}"><h2> {{ relate_course.name }}</h2></a>
+                                <a target="_blank" rel="noopener" href="{% url 'course:course_detail' relate_course.id %}"><h2> {{ relate_course.name }}</h2></a>
                                 <span class="fl">学习时长：<i class="key">{{ relate_course.learn_times }}</i></span>
                             </dd>
                         </dl>
 
+					{% empty %}
+						<p class="cd-empty">暂无相关课程推荐。</p>
 					{% endfor %}
 
                 </div>
@@ -153,7 +153,9 @@ function add_fav(current_elem, fav_id, fav_type){
                     alert(data.msg)
                 }
             }else if(data.status == 'success'){
-                current_elem.text(data.msg)
+                // 后端回的就是按钮该显示的文字（收藏 / 已收藏），配色跟着一起切，
+                // 否则点了只有字在变，按钮还是未收藏那套颜色
+                current_elem.text(data.msg).toggleClass('collected', data.msg === '已收藏');
             }
         },
     });

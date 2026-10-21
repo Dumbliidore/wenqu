@@ -1,11 +1,23 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200">
-    <title>Title</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=1200">
+	<title>邮件已发送 - 问渠在线</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/tokens.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
-<body>
-<p>邮件已发送，请注意查收！</p>
+<body class="errorpage">
+<section>
+	<div class="wp">
+		<div class="cont">
+			<h1>邮件已发送，请注意查收</h1>
+			<p>如果该邮箱注册过账号，收信后点邮件里的链接即可重置密码。</p>
+			<p><a href="{% url 'login' %}">返回登录</a></p>
+		</div>
+	</div>
+</section>
 </body>
 </html>

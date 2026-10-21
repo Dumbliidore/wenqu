@@ -1,0 +1,309 @@
+/* 列表页族：卡片、排序条、右侧推荐、分页。
+   只作用于 .page-course-list，改这一页不影响别的页面。
+   实测依据：课程封面原图 240x135，旧样式把它拉成 280x190（宽 1.17 倍、高 1.41 倍，比例失真），
+   右栏推荐图同样被拉成 240x220。这里一律按 cover/contain 出图，宽度靠网格分配，不再写死 img 尺寸。 */
+
+.page-course-list .list {
+    margin-top: 28px;
+    margin-bottom: 44px;
+}
+
+/* 左栏与右栏：沿用站点 900 + 280 的两栏骨架，只把边框收进卡片自己 */
+.page-course-list .list .layout {
+    border: 0;
+}
+
+.page-course-list .list .left {
+    width: 900px;
+    float: left;
+}
+
+.page-course-list .list .right {
+    width: 280px;
+    float: right;
+}
+
+/* 排序条：改成一组胶囊，选中项反白 */
+.page-course-list .list .left .head {
+    height: auto;
+    line-height: normal;
+    border: 0;
+    background: transparent;
+    padding: 0 0 18px;
+}
+
+.page-course-list .tab_header {
+    display: flex;
+    gap: 8px;
+    height: auto;
+    line-height: normal;
+}
+
+.page-course-list .tab_header li {
+    float: none;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-indent: 0;
+}
+
+.page-course-list .tab_header a {
+    display: block;
+    box-sizing: border-box;
+    width: auto;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--muted-foreground);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.page-course-list .tab_header a:hover {
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.page-course-list .tab_header .active {
+    border-bottom: 0;
+}
+
+.page-course-list .tab_header .active a {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+/* 卡片网格：三列，靠 1px 边框分隔，不加阴影 */
+.page-course-list .list .group_list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.page-course-list .list .group_list .box {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    float: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.page-course-list .list .group_list .box:hover {
+    border-color: var(--ring);
+    box-shadow: var(--shadow-sm);
+}
+
+.page-course-list .list .group_list .box:hover img {
+    opacity: 1;
+    filter: none;
+}
+
+.page-course-list .list .group_list .box > a {
+    display: block;
+    width: 100%;
+}
+
+.page-course-list .list .group_list .box img {
+    display: block;
+    width: 100%;
+    height: 158px;
+    object-fit: cover;
+}
+
+.page-course-list .list .group_list .box .des {
+    position: static;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 10px;
+    row-gap: 6px;
+    flex: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 14px 16px 12px;
+}
+
+.page-course-list .list .group_list .box .des > a {
+    grid-column: 1 / -1;
+    display: block;
+}
+
+.page-course-list .list .group_list .box .des h2 {
+    height: 44px;
+    overflow: hidden;
+    line-height: 22px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+    word-break: break-all;
+}
+
+.page-course-list .list .group_list .box:hover .des h2 {
+    color: var(--brand-ink);
+}
+
+.page-course-list .list .group_list .des span {
+    position: static;
+    display: block;
+    float: none;
+    width: auto;
+    height: auto;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--muted-foreground);
+}
+
+.page-course-list .list .group_list .des .fr {
+    justify-self: end;
+    text-align: right;
+}
+
+.page-course-list .list .group_list .des .key {
+    font-style: normal;
+    font-size: 13px;
+}
+
+/* 底部机构条：从绝对定位改成卡片尾部一行 */
+.page-course-list .list .group_list .bottom {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+    height: auto;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.page-course-list .list .group_list .bottom > a {
+    display: contents;
+}
+
+.page-course-list .list .group_list .bottom span {
+    display: block;
+    height: auto;
+    line-height: normal;
+    width: auto;
+    text-align: left;
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: 13px;
+}
+
+.page-course-list .list .group_list .bottom .fl {
+    width: auto;
+    padding: 11px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.page-course-list .list .group_list .bottom .fr {
+    width: auto;
+    padding: 11px 16px 11px 30px;
+    text-indent: 0;
+    background: url(../images/star.png) no-repeat 14px center;
+    cursor: default;
+    flex: none;
+}
+
+/* 右侧热门课程推荐：小图条，封面按 contain 出图不拉伸 */
+.page-course-list .list .right .head {
+    height: 44px;
+    line-height: 44px;
+    padding-left: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    color: var(--foreground);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.page-course-list .list .right .group_recommend {
+    padding: 0;
+}
+
+.page-course-list .list .right .group_recommend dl {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    width: auto;
+    height: auto;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-list .list .right .group_recommend dl:last-child {
+    border-bottom: 0;
+}
+
+.page-course-list .list .right .group_recommend dt {
+    flex: none;
+    width: 96px;
+    height: 54px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+}
+
+.page-course-list .list .right .group_recommend dt a,
+.page-course-list .list .right .group_recommend dt img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.page-course-list .list .right .group_recommend dd {
+    flex: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+}
+
+.page-course-list .list .right .group_recommend dd h2 {
+    height: 40px;
+    overflow: hidden;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-list .list .right .group_recommend dd:hover h2,
+.page-course-list .list .right .group_recommend dd a:hover h2 {
+    color: var(--brand-ink);
+}
+
+.page-course-list .list .right .group_recommend dd span {
+    display: block;
+    position: static;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.page-course-list .list .right .group_recommend dd .key {
+    font-style: normal;
+    font-size: 12px;
+}

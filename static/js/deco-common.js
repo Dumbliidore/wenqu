@@ -40,12 +40,8 @@ $(function() {
 		return false;
 	});
 
-    //顶部个人中心下拉框
-    $('.header .personal').hover(function(){
-        $('.header .userdetail').stop(true).show();
-    },function(){
-        $('.header .userdetail').stop(true).hide();
-    });
+    //顶部个人中心下拉框已改成 chrome.css 里的 .personal:hover 规则，
+    //这里若再用 jQuery 开关 display，写进去的行内样式会盖掉 :hover，等于把缝补不回来。
     var msg_show = true,
         msg = +$('#MsgNum').text();
     function msgFlash(){

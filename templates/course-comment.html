@@ -7,7 +7,7 @@
 		<div class="crumbs">
 			<ul>
 				<li><a href="{% url 'index' %}">首页</a>></li>
-                <li><a href="{% url 'course:course_list' %}">公开课程</a>></li>
+                <li><a href="{% url 'course:course_list' %}">公开课</a>></li>
 				<li><a href="{% url 'course:course_detail' course.id %}">课程详情</a>></li>
                 <li>评论信息</li>
 			</ul>
@@ -24,15 +24,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/course-pages/course-info.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/moco-ui.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/aui.css' %}" />
+    {# 页级覆盖层：必须排在遗留栈之后，同特异度才赢 #}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/course-study.css' %}">
 
 {% endblock %}
 
 {% block content %}
-    <div id="main">
+    <div id="main" class="page-course-learn page-course-comment">
     <div class="course-infos">
         <div class="w pr">
-            <div style="height: 15px" class="path">
-            </div>
             <div class="hd">
                 <h2 class="l">{{ course.name }}</h2>
             </div>
@@ -70,21 +70,23 @@
                     <!--发布评论-->
                     <div id="js-pub-container" class="issques clearfix js-form">
                         <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">
-                            <textarea id="js-pl-textarea" class="" placeholder="扯淡、吐槽、表扬、鼓励……想说啥就说啥！" ></textarea>
+                            <textarea id="js-pl-textarea" placeholder="扯淡、吐槽、表扬、鼓励……想说啥就说啥！" ></textarea>
                         </div>
-                        <input type="button" id="js-pl-submit" class="pub-btn" data-cid="452" value="发表评论">
-                        <p class="global-errortip js-global-error"></p>
+                        <div class="pub-actions">
+                            <p class="global-errortip js-global-error"></p>
+                            <input type="button" id="js-pl-submit" class="pub-btn" data-cid="452" value="发表评论">
+                        </div>
                     </div>
                     <div id="course_note">
                         <ul class="mod-post" id="comment-list">
                         {% for user_comments in all_comments %}
                             <li class="post-row">
                                 <div class="media">
-                                    <span target="_blank"><img src='{{ MEDIA_URL }}{{ user_comments.user.image }}' width='40' height='40' /></span>
+                                    <img src='{{ MEDIA_URL }}{{ user_comments.user.image }}' alt='{{ user_comments.user.username }}' />
                                 </div>
                                 <div class="bd">
                                     <div class="tit">
-                                        <span target="_blank">{{ user_comments.user.username }}</span>
+                                        <span>{{ user_comments.user.username }}</span>
                                     </div>
                                     <p class="cnt">{{ user_comments.comments }}</p>
                                     <div class="footer clearfix">
@@ -92,6 +94,8 @@
                                     </div>
                                 </div>
                             </li>
+                        {% empty %}
+                            <li class="cl-empty">还没有人评论，来说两句吧。</li>
                         {% endfor %}
 
 
@@ -107,20 +111,22 @@
                         <ul class="downlist">
                             {% for course_resource in course_resources %}
                             <li>
-                                <span ><i class="aui-iconfont aui-icon-file"></i>&nbsp;&nbsp;{{ course_resource.name }}</span>
-                                <a href="{{ MEDIA_URL }}{{ course_resource.download }}" class="downcode" target="_blank" download="" data-id="274" title="">下载</a>
+                                <span><i class="aui-iconfont aui-icon-file"></i>{{ course_resource.name }}</span>
+                                <a href="{{ MEDIA_URL }}{{ course_resource.download }}" class="downcode" target="_blank" rel="noopener" download>下载</a>
                             </li>
+                            {% empty %}
+                            <li><span class="cl-empty">暂无下载资料</span></li>
                             {% endfor %}
                         </ul>
                     </div>
                         <div class="box mb40">
-                        <h4>讲师提示</h4>
+                        <h4>教师提示</h4>
                         <div class="teacher-info">
-                            <a href="{% url 'org:teacher_detail' course.teacher.id %}" target="_blank">
-                                <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' width='80' height='80' />
+                            <a href="{% url 'org:teacher_detail' course.teacher.id %}" target="_blank" rel="noopener">
+                                <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' alt='{{ course.teacher.name }}' />
                             </a>
         <span class="tit">
-          <a href="{% url 'org:teacher_detail' course.teacher.id %}" target="_blank">{{ course.teacher.name }}</a>
+          <a href="{% url 'org:teacher_detail' course.teacher.id %}" target="_blank" rel="noopener">{{ course.teacher.name }}</a>
         </span>
                             <span class="job">{{ course.teacher.work_position }}</span>
                         </div>
@@ -147,11 +153,13 @@
                                     <ul class="other-list">
                                         {% for relate_course in relate_courses %}
                                         <li class="curr">
-                                            <a href="{% url 'course:course_detail' relate_course.id %}" target="_blank">
+                                            <a href="{% url 'course:course_detail' relate_course.id %}" target="_blank" rel="noopener">
                                                 <img src="{{ MEDIA_URL }}{{ relate_course.image }}" alt="{{ relate_course.name }}">
                                                 <span class="name autowrap">{{ relate_course.name }}</span>
                                             </a>
                                         </li>
+                                        {% empty %}
+                                        <li class="cl-empty">暂时还没有同学学过其他课。</li>
                                         {% endfor %}
                                     </ul>
                                 </div>

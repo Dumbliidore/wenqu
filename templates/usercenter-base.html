@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block custom_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/usercenter.css' %}">
+{% endblock %}
+
 {% block header %}
 <section class="headerwrap headerwrap2">
     <header>
@@ -13,7 +17,7 @@
 
             <div class="middle">
                 <div class="wp">
-                    <a href="{% url 'index' %}"><img class="fl" src="{% static 'images/logo2.png' %}"/></a>
+                    <a class="brand fl" href="{% url 'index' %}"><img src="{% static 'images/footlogo.png' %}" alt="问渠在线"/></a>
                     <h1>{% block usercenter_section %}个人资料{% endblock %}</h1>
                 </div>
             </div>
@@ -36,13 +40,13 @@
 
 {% block content %}
 <section>
-    <div class="wp list personal_list">
+    <div class="wp list personal_list page-usercenter">
         <div class="left">
             <ul>
             <li class="{% if sort == 'info' %}active2{% endif %}"><a href="{% url 'users:user_info' %}">个人资料</a></li>
             <li class="{% if sort == 'course' %}active2{% endif %}"><a href="{% url 'users:mycourse' %}">我的课程</a></li>
             <li class="{% if sort == 'fav_org' %}active2{% endif %}"><a href="{% url 'users:myfav_org' %}">我的收藏</a></li>
-            <li class="{% if sort == 'message' %}active2{% endif %}"><a href="{% url 'users:mymessage' %}" style="position: relative;">我的消息</a></li>
+            <li class="{% if sort == 'message' %}active2{% endif %}"><a href="{% url 'users:mymessage' %}">我的消息</a></li>
             </ul>
         </div>
 

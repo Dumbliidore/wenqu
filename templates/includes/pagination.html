@@ -11,7 +11,7 @@
             {% elif num == page_obj.number %}
                 <li class="active"><a href="?{% page_url num %}">{{ num }}</a></li>
             {% else %}
-                <li><a href="?{% page_url num %}" class="page">{{ num }}</a></li>
+                <li><a href="?{% page_url num %}">{{ num }}</a></li>
             {% endif %}
         {% endfor %}
 

@@ -242,18 +242,28 @@ class OrgDetailTests(TestCase):
         self.assertEqual([t.name for t in response.context["all_teachers"]], ["李老师"])
         self.assertIn("<p>机构介绍</p>", response.content.decode("utf-8"))
 
-    def test_course_page_paginates_one_per_page(self):
+    def test_course_page_paginates_three_per_page(self):
+        make_course(
+            name="第四条课程",
+            org=self.org,
+            teacher=self.teacher,
+            add_time=timezone.now() + timezone.timedelta(days=1),
+        )
+
         response = self.client.get(reverse("org:org_course", args=[self.org.id]))
 
         page = response.context["all_courses"]
-        self.assertEqual(page.paginator.num_pages, 3)
-        self.assertEqual([c.name for c in page.object_list], ["机构课程 0"])
+        self.assertEqual(page.paginator.per_page, 3)
+        self.assertEqual(page.paginator.num_pages, 2)
+        self.assertEqual(
+            [c.name for c in page.object_list], ["第四条课程", "机构课程 0", "机构课程 1"]
+        )
 
         second = self.client.get(
             reverse("org:org_course", args=[self.org.id]), {"page": 2}
         )
         self.assertEqual(
-            [c.name for c in second.context["all_courses"].object_list], ["机构课程 1"]
+            [c.name for c in second.context["all_courses"].object_list], ["机构课程 2"]
         )
 
     def test_teacher_page_lists_all_teachers(self):

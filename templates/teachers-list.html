@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}课程讲师 - 问渠在线{% endblock %}
+{% block title %}授课教师列表 - 问渠在线{% endblock %}
 {% load static %}
 {% block custom_bread %}
 	<section>
         <div class="wp">
             <ul  class="crumbs">
                 <li><a href="{% url 'index' %}">首页</a>></li>
-                <li>课程讲师</li>
+                <li>授课教师</li>
             </ul>
         </div>
     </section>
@@ -55,7 +55,7 @@
 		{% include "includes/pagination.html" with page_obj=all_teachers %}
 	</div>
 	<div class="right layout">
-		<div class="head">讲师排行榜</div>
+		<div class="head">教师排行榜</div>
             {% for hot_teacher in sorted_teachers %}
             <dl class="des">
                 <span class="num fl">1</span>

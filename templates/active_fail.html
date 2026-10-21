@@ -1,11 +1,23 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200">
-    <title>Title</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=1200">
+	<title>激活失败 - 问渠在线</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/tokens.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
-<body>
-<p>链接失效</p>
+<body class="errorpage">
+<section>
+	<div class="wp">
+		<div class="cont">
+			<h1>激活链接已失效</h1>
+			<p>该链接只能使用一次，或已超过有效期。</p>
+			<p><a href="{% url 'login' %}">重新登录</a>后用绑定的邮箱可以再发一次激活邮件。</p>
+		</div>
+	</div>
+</section>
 </body>
 </html>

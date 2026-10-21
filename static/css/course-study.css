@@ -1,0 +1,755 @@
+/* 课程学习页族：/course/info/（章节）与 /course/comment/（评论）。
+   两页共用同一套遗留栈（course-pages/*.css），所以共用这一个文件：
+   作用域类 .page-course-learn 挂在 #main 上，评论页再多挂一个 .page-course-comment。
+   遗留规则一律不删，只在同名链上多一层作用域类赢特异度；顺序上本文件排在 custom_css 最后。
+   版面沿用整站口径：卡片 = --card 底 + 1px --border + --radius-xl，默认无阴影；
+   两栏 = 900 + 280 + 20 间距，凑满 .wp 的 1200 轨道。 */
+
+/* ---------- 夺回公共基底 ---------- */
+
+/* 遗留栈排在 chrome.css 之后，其中 aui.css 的 html,body 声明是全站的独一份：
+   body 底色 #f4f4f4、body 高度钉死成一屏（chrome 的整屏撑开配方失效，底色只画到第一屏）、
+   整页文字禁止选中。两页各自的加载顺序还不一样（章节页 course-info.css 在 aui 之后、
+   评论页在之前），所以连这两页的底色都互不相同。这里在本文件（两页都排最后）
+   一次纠回 chrome.css 的口径。 */
+html {
+    height: 100%;
+}
+
+body {
+    height: auto;
+    background-color: var(--background);
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+/* ---------- 栅格 ---------- */
+
+/* 遗留 .w 在 max-width:1200 的媒体查询里会变成 5% 边距，和全站 .wp 的 1200 居中轨道对不齐，
+   这里锁死成同一条轨道；body 的 min-width:1200 已经在 chrome.css 里兜住，不需要响应式塌栏。 */
+.page-course-learn .w {
+    box-sizing: border-box;
+    width: 1200px;
+    max-width: none;
+    margin: 0 auto;
+}
+
+.page-course-learn #main {
+    padding: 0 0 44px;
+}
+
+/* ---------- 顶部信息带 ---------- */
+
+/* 原来是一条 --muted-foreground 灰带配白字，整站没有第二种深色块，改成和其他页一致的卡片 */
+.page-course-learn .course-infos {
+    background-color: transparent;
+}
+
+.page-course-learn .course-infos .w {
+    height: auto;
+    margin-top: 24px;
+    padding: 22px 24px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+}
+
+.page-course-learn .course-infos .hd {
+    clear: none;
+}
+
+.page-course-learn .course-infos h2 {
+    float: none;
+    line-height: 1.4;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/* 数值在标签之前（.meta-value 在前），所以纵向排就是「大数在上、说明在下」 */
+.page-course-learn .course-infos .statics {
+    position: static;
+    display: flex;
+    align-items: flex-start;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    color: var(--foreground);
+    font-size: 0;
+}
+
+.page-course-learn .course-infos .statics .static-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0 28px;
+    font-size: 13px;
+    border-left: 1px solid var(--border);
+}
+
+.page-course-learn .course-infos .statics .static-item:first-child {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.page-course-learn .course-infos .statics .static-time {
+    font-size: 13px;
+}
+
+/* 遗留的分隔线是 1px 半透明 <em>，改成 border-left 之后这个空标签只剩撑高作用 */
+.page-course-learn .course-infos .statics .static-item em {
+    display: none;
+}
+
+.page-course-learn .course-infos .statics .static-item .meta-value {
+    display: block;
+    margin: 0;
+    opacity: 1;
+    color: var(--foreground);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.page-course-learn .course-infos .statics .static-item strong {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.page-course-learn .course-infos .statics .static-item .meta {
+    display: block;
+    opacity: 1;
+    color: var(--muted-ink);
+    font-size: 12px;
+}
+
+/* ---------- 章节 / 评论两个 tab ---------- */
+
+.page-course-learn .course-info-main {
+    margin-top: 20px;
+}
+
+.page-course-learn .course-info-main .info-bar {
+    margin-bottom: 0;
+}
+
+/* 遗留用 padding-right:320px + margin-right:-320px 的圣杯布局，改成 flex 后那套偏移全部作废 */
+.page-course-learn .course-info-main .content-wrap {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-right: 0;
+    margin-bottom: 0;
+    overflow: visible;
+}
+
+/* reset.css 的 .clearfix::after 在 flex 容器里会变成第三个零宽子项，白吃掉一份 gap，
+   两栏就再也凑不满 1200 轨道；浮动已经被 flex 取代，这个清除块没有存在价值 */
+.page-course-learn .course-info-main .content-wrap::after {
+    display: none;
+}
+
+.page-course-learn .course-info-main .content {
+    flex: 1 1 0;
+    min-width: 0;
+    float: none;
+    width: auto;
+    overflow: visible;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+}
+
+.page-course-learn .course-info-main .aside {
+    flex: 0 0 280px;
+    float: none;
+    width: auto;
+    margin-right: 0;
+    padding-top: 0;
+}
+
+.page-course-learn .course-info-main .mod-tab-menu {
+    border-bottom: 1px solid var(--border);
+}
+
+/* 和课程列表页的排序条同一种胶囊：选中项反白 */
+.page-course-learn .course-menu {
+    display: flex;
+    gap: 8px;
+    height: auto;
+    line-height: normal;
+    margin: 0;
+    padding: 14px 20px;
+    border-bottom: 0;
+}
+
+.page-course-learn .course-menu li {
+    float: none;
+    width: auto;
+    height: auto;
+    text-align: left;
+}
+
+.page-course-learn .course-menu a {
+    display: block;
+    box-sizing: border-box;
+    width: auto;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--muted-foreground);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.page-course-learn .course-menu a span {
+    display: inline;
+    position: static;
+    height: auto;
+    line-height: normal;
+    top: auto;
+}
+
+.page-course-learn .course-menu a:hover {
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.page-course-learn .course-menu a.active {
+    height: 34px;
+    background: var(--primary);
+    border-bottom: 1px solid var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+/* ---------- 章节列表 ---------- */
+
+.page-course-learn .cl-empty {
+    padding: 18px 20px;
+    font-size: 13px;
+    color: var(--muted-ink);
+}
+
+/* 行内空态要跟着行高走，不能带卡片级的大 padding */
+.page-course-learn .mod-chapters .chapter .video li .cl-empty,
+.page-course-learn .downlist li .cl-empty {
+    display: block;
+    padding: 12px 4px 12px 13px;
+    font-size: 13px;
+}
+
+/* 列表里的空态行不该带分隔线，而这些 li 已经被列表规则给过 padding，只能同级再压一次 */
+.page-course-learn .cp-other-learned .other-list li.cl-empty,
+.page-course-comment .mod-post li.cl-empty {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 0;
+}
+
+.page-course-learn .mod-chapters {
+    margin-top: 0;
+    padding: 4px 20px 8px;
+}
+
+.page-course-learn .mod-chapters .chapter {
+    padding: 0;
+    border-bottom: 0;
+}
+
+.page-course-learn .mod-chapters .chapter + .chapter {
+    border-top: 1px solid var(--border);
+}
+
+.page-course-learn .mod-chapters .chapter h3 {
+    height: auto;
+    line-height: normal;
+    padding: 14px 0;
+    font-size: 15px;
+    color: var(--foreground);
+    cursor: default;
+    overflow: visible;
+}
+
+.page-course-learn .mod-chapters .chapter h3:hover {
+    background-color: transparent;
+}
+
+.page-course-learn .mod-chapters .chapter h3 strong {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 0;
+    padding: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-weight: 600;
+}
+
+/* 章节展开箭头与视频前的图标都指向 /static/img/learnicon.png，这张雪碧图不在本仓库里，
+   一直是空白；这里不补图，直接把箭头换成 CSS 小竖条，视频行的图标位改由 padding 让出 */
+.page-course-learn .mod-chapters .chapter h3 i {
+    flex: none;
+    width: 3px;
+    height: 14px;
+    margin: 0;
+    border-radius: 2px;
+    background: var(--primary);
+}
+
+.page-course-learn .mod-chapters .chapter ul.video {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.page-course-learn .mod-chapters .chapter .video li {
+    position: static;
+    display: block;
+    height: auto;
+    line-height: normal;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-learn .mod-chapters .chapter .video li:last-child {
+    border-bottom: 0;
+}
+
+.page-course-learn .mod-chapters .chapter .video li:hover {
+    background: var(--muted);
+}
+
+.page-course-learn .mod-chapters .chapter .video li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 4px 12px 13px;
+    overflow: visible;
+    word-break: normal;
+    background: none;
+    color: var(--muted-ink);
+}
+
+.page-course-learn .mod-chapters .chapter .video li a:hover {
+    color: var(--foreground);
+}
+
+.page-course-learn .mod-chapters .chapter .video li .study-state {
+    display: none;
+}
+
+.page-course-learn .video li .vt {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.page-course-learn .video li .vd {
+    flex: none;
+    font-size: 12px;
+    color: var(--muted-ink);
+}
+
+/* ---------- 右侧栏三张卡片 ---------- */
+
+.page-course-learn .course-info-main .aside .bd {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-course-learn .course-info-main .aside .box,
+.page-course-learn .cp-other-learned {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.page-course-learn .box.mb40 {
+    margin-bottom: 0;
+}
+
+.page-course-learn .course-info-main .aside h4 {
+    margin: 0;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-learn .downlist {
+    padding: 0 16px;
+    line-height: normal;
+}
+
+.page-course-learn .downlist li {
+    position: static;
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-learn .downlist li:last-child {
+    border-bottom: 0;
+}
+
+.page-course-learn .downlist li span {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    color: var(--muted-ink);
+}
+
+.page-course-learn .downlist li span .aui-iconfont {
+    margin-right: 8px;
+    font-size: 15px;
+    color: var(--muted-foreground);
+}
+
+.page-course-learn .downlist li a {
+    position: static;
+    flex: none;
+    margin-left: 12px;
+    line-height: normal;
+    background: none;
+    font-size: 12px;
+    color: var(--brand-ink);
+}
+
+.page-course-learn .downlist li a:hover {
+    text-decoration: underline;
+}
+
+/* 遗留靠 padding-left:90px + img{margin-left:-90px} 假装的头像位，改成真正的 flex */
+.page-course-learn .course-info-main .aside .teacher-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 16px;
+    overflow: visible;
+}
+
+.page-course-learn .course-info-main .aside .teacher-info img {
+    flex: none;
+    float: none;
+    margin: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--muted);
+}
+
+.page-course-learn .course-info-main .aside .teacher-info .tit {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+    margin: 0;
+}
+
+.page-course-learn .course-info-main .aside .teacher-info .tit a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-learn .course-info-main .aside .teacher-info .tit a:hover {
+    color: var(--brand-ink);
+}
+
+.page-course-learn .course-info-main .aside .teacher-info .job {
+    flex: 1 0 100%;
+    margin-left: 68px;
+    font-size: 12px;
+    color: var(--muted-ink);
+}
+
+/* 提示块的小三角是 :before 画的，卡片里已经有分节线，不需要再指一次 */
+.page-course-learn .course-info-tip {
+    position: static;
+    margin: 0 16px 16px;
+    padding: 14px 16px;
+    background-color: var(--muted);
+    border-radius: var(--radius-md);
+}
+
+.page-course-learn .course-info-tip:before {
+    display: none;
+}
+
+.page-course-learn .course-info-tip dl {
+    margin: 0;
+}
+
+.page-course-learn .course-info-tip dl.first {
+    margin-bottom: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-learn .course-info-tip dl + dl {
+    padding-top: 12px;
+}
+
+.page-course-learn .course-info-tip dt {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-learn .course-info-tip dd {
+    margin: 0;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: normal;
+    color: var(--muted-ink);
+}
+
+.page-course-learn .cp-other-learned {
+    margin-top: 0;
+    padding: 0;
+}
+
+.page-course-learn .cp-other-learned .cp-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-learn .cp-other-learned .cp-header .cp-tit {
+    float: none;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-learn .cp-other-learned .other-list {
+    padding: 0 16px;
+    overflow: visible;
+}
+
+.page-course-learn .cp-other-learned .other-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-learn .cp-other-learned .other-list li:last-child {
+    border-bottom: 0;
+}
+
+.page-course-learn .cp-other-learned .other-list li a {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--muted-ink);
+}
+
+.page-course-learn .cp-other-learned .other-list li img {
+    flex: none;
+    display: block;
+    margin: 0;
+    width: 96px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+}
+
+.page-course-learn .cp-other-learned .other-list li .name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 0;
+    line-height: 20px;
+    white-space: normal;
+    text-overflow: clip;
+    font-size: 13px;
+}
+
+.page-course-learn .cp-other-learned .other-list li a:hover .name {
+    color: var(--brand-ink);
+}
+
+/* ---------- 评论页 ---------- */
+
+.page-course-comment .issques {
+    margin: 0;
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* 编辑器宽度遗留写死 720，卡片里应该跟着栏宽走 */
+.page-course-comment .pub-editor-wrap {
+    width: auto;
+    padding: 0;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.page-course-comment .pub-editor-wrap:focus-within {
+    border-color: var(--ring);
+    box-shadow: var(--focus-ring);
+}
+
+.page-course-comment #js-pl-textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 88px;
+    padding: 12px 14px;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--foreground);
+    resize: vertical;
+}
+
+.page-course-comment #js-pl-textarea:focus {
+    outline: none;
+}
+
+.page-course-comment #js-pl-textarea::placeholder {
+    color: var(--muted-foreground);
+}
+
+.page-course-comment .pub-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-height: 36px;
+    margin-top: 12px;
+}
+
+.page-course-comment .pub-btn {
+    box-sizing: border-box;
+    float: none;
+    height: 36px;
+    margin: 0;
+    padding: 0 18px;
+    line-height: 34px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--primary-foreground);
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.page-course-comment .pub-btn:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    opacity: 0.88;
+}
+
+.page-course-comment .global-errortip {
+    margin: 0;
+    font-size: 12px;
+    color: var(--destructive-ink);
+}
+
+.page-course-comment #course_note {
+    padding: 0 20px 8px;
+}
+
+.page-course-comment .mod-post {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* 遗留用 .media float + .bd margin-left:60 拼的两栏，这里改真 flex，长评论才不会压到头像下 */
+.page-course-comment .mod-post .post-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 0;
+    padding: 18px 0;
+    overflow: visible;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-comment .mod-post .post-row:last-child {
+    border-bottom: 0;
+}
+
+.page-course-comment .mod-post .post-row .media {
+    flex: none;
+    float: none;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--muted);
+}
+
+.page-course-comment .mod-post .post-row .media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+.page-course-comment .mod-post .post-row .bd {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.page-course-comment .mod-post .post-row .tit {
+    margin-bottom: 4px;
+    line-height: normal;
+}
+
+.page-course-comment .mod-post .post-row .tit span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-comment .mod-post .post-row .cnt {
+    margin: 0;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--muted-ink);
+    word-break: break-word;
+}
+
+.page-course-comment .mod-post .post-row .footer {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted-ink);
+}
+
+.page-course-comment .mod-post .post-row .timeago {
+    float: none;
+}

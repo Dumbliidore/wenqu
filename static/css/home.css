@@ -1,0 +1,415 @@
+/* 首页：hero 与公共页头同属一条浅色带，往下 features / 课程 / 机构 是浅色卡。
+   实测尺寸决定了这里的定值：banner 原图 1200x460，所以轮播就定 460 高、近 1:1 铺满，不放大；
+   课程封面 240x135，网格定 4 列（卡宽 282、封面高 158，约 1.2 倍）。 */
+
+.home .hero {
+    position: relative;
+    background: var(--hero);
+    color: var(--hero-text);
+    padding: 44px 0 88px;
+}
+
+/* 首页的页头下面是同一条带子的 hero，两处都不该各挂一条渐隐；
+   这里只保留 hero 自己那条，页头那条在有后继带子时撤掉（不支持 :has 的浏览器只是多一道浅痕） */
+.headerwrap:has(+ .home)::after {
+    content: none;
+}
+
+/* hero 下沿渐隐，和 chrome.css 里页头那条一样，把带子"抬"在内容区之上 */
+.home .hero::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 48px;
+    background: linear-gradient(180deg, oklch(0.21 0.02 262 / 0.06), transparent);
+    pointer-events: none;
+}
+
+.home .hero .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand-ink);
+    margin-bottom: 14px;
+}
+
+.home .hero h1 {
+    font-size: 44px;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    /* style.css 里 h1—h6 统一是 --foreground，这里显式跟着带子的墨色走 */
+    color: var(--hero-text);
+}
+
+.home .hero .lede {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--hero-muted);
+    max-width: 640px;
+    margin-bottom: 26px;
+}
+
+.home .hero .cta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.home .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 42px;
+    padding: 0 22px;
+    border-radius: var(--radius-lg);
+    font-size: 15px;
+    font-weight: 600;
+    transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.home .btn-primary {
+    background: var(--hero-text);
+    color: var(--hero);
+}
+
+.home .btn-primary:hover {
+    opacity: 0.9;
+}
+
+.home .btn-glass {
+    background: var(--hero-fill);
+    border: 1px solid var(--hero-line);
+    color: var(--hero-text);
+    -webkit-backdrop-filter: blur(var(--hero-blur));
+    backdrop-filter: blur(var(--hero-blur));
+}
+
+.home .btn-glass:hover {
+    background: var(--hero-fill-hover);
+    border-color: var(--ring);
+}
+
+/* 轮播卡片：保留 .imgslide / .unslider-arrow 这两个 index.js 的钩子 */
+.home .carousel {
+    position: relative;
+    height: 460px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--hero-line);
+    background: var(--hero-elev);
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+}
+
+.home .imgslide {
+    width: 100%;
+    height: 460px;
+}
+
+.home .imgslide img {
+    display: block;
+    width: 100%;
+    height: 460px;
+    object-fit: cover;
+}
+
+.home .carousel .unslider-arrow {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    z-index: 5;
+    width: 34px;
+    height: 34px;
+    margin-top: -17px;
+    border-radius: 50%;
+    /* 这两个按钮压在轮播照片上，配色必须固定为浅色，不能跟着公共带的明暗翻。
+       --on-image 就是为这种情况留的一档。 */
+    background: oklch(0 0 0 / 0.35) no-repeat center;
+    color: var(--on-image);
+    font-size: 16px;
+    line-height: 34px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.home .carousel .unslider-arrow.next {
+    left: auto;
+    right: 14px;
+}
+
+.home .carousel .unslider-arrow::before {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin: 11px auto 0;
+    border-left: 2px solid var(--on-image);
+    border-bottom: 2px solid var(--on-image);
+    transform: rotate(45deg);
+}
+
+.home .carousel .unslider-arrow.next::before {
+    transform: rotate(-135deg);
+}
+
+.home .imgslide .dots {
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    bottom: 16px;
+}
+
+.home .imgslide .dots li {
+    display: inline-block;
+    float: none;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    border-radius: 50%;
+    background: oklch(1 0 0 / 0.4);
+    text-indent: -9999px;
+    cursor: pointer;
+}
+
+/* style.css 的 .imgslide .dots .active 带 !important，这里同样要压过它。
+   指示点也在照片上，所以两档都用 --on-image，只是透明度不同 */
+.home .imgslide .dots .active {
+    background: var(--on-image) !important;
+    width: 22px;
+    border-radius: var(--radius-pill);
+}
+
+/* 四条特性：卡片压在深浅两区的交界上，把那条横线切成四段，比整块对切柔和 */
+.home .features {
+    position: relative;
+    z-index: 5;
+    background: transparent;
+    margin-top: -48px;
+    padding: 0 0 36px;
+}
+
+.home .features ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.home .features li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+}
+
+.home .features img {
+    height: 36px;
+    width: auto;
+    flex: none;
+}
+
+.home .features p {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/* 区块通用头 */
+.home .section {
+    background: var(--background);
+    padding: 44px 0;
+}
+
+.home .section.grey {
+    background: var(--muted);
+}
+
+.home .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.home .sec-head .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand-ink);
+    margin-bottom: 8px;
+}
+
+.home .sec-head h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+}
+
+.home .sec-head .more {
+    font-size: 14px;
+    /* 区块头压在 --muted 浅灰面上，用 --muted-foreground 只有 4.35，走加深的 --muted-ink 一档 */
+    color: var(--muted-ink);
+}
+
+.home .sec-head .more:hover {
+    color: var(--brand-ink);
+}
+
+/* 课程网格 */
+.home .grid-course {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.home .course-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home .course-card:hover {
+    border-color: var(--ring);
+    box-shadow: var(--shadow-sm);
+}
+
+.home .course-card .cover img {
+    display: block;
+    width: 100%;
+    height: 158px;
+    object-fit: cover;
+}
+
+.home .course-card .body {
+    padding: 14px 16px 0;
+    flex: 1;
+}
+
+.home .course-card h3 {
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: var(--foreground);
+    height: 44px;
+    overflow: hidden;
+}
+
+.home .course-card:hover h3 {
+    color: var(--brand-ink);
+}
+
+.home .course-card .meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.home .course-card .tag {
+    color: var(--brand-ink);
+    font-weight: 600;
+}
+
+/* style.css 的 .key{color:var(--warning)!important} 把难度数字钉成橙色，白底上只有 2.65。
+   个人中心那边同样用 !important 压回了前景色，这里保持一致。 */
+.home .course-card .key {
+    font-style: normal;
+    color: var(--foreground) !important;
+}
+
+.home .course-card .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding: 11px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.home .course-card .fav {
+    padding-left: 18px;
+    background: url(../images/star.png) no-repeat left center;
+}
+
+/* 机构网格：logo 多为白底图，统一放浅色砖里 contain，不裁不拉伸 */
+.home .grid-org {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.home .org-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home .org-card:hover {
+    border-color: var(--ring);
+    box-shadow: var(--shadow-sm);
+}
+
+.home .org-card .logo {
+    height: 96px;
+    background: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+}
+
+.home .org-card .logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.home .org-card .body {
+    padding: 12px 14px 14px;
+}
+
+.home .org-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--foreground);
+    height: 22px;
+    overflow: hidden;
+}
+
+.home .org-card:hover h3 {
+    color: var(--brand-ink);
+}
+
+.home .org-card .row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.home .org-card .badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    background: var(--brand-soft);
+    color: var(--brand-ink);
+    font-size: 12px;
+}

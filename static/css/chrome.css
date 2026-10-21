@@ -1,0 +1,628 @@
+/* 公共头尾：浅色带。
+   参照 21st.dev 社区模板的 light base（bg-background + text-foreground + backdrop-blur + rounded-md），
+   颜色一律取 tokens.css 的 --hero-* 档。页头与页脚共用这条带子，中间内容区同为浅色，
+   两者的分层靠 .headerwrap::after 那道渐影和页脚的 1px 上边线，不是靠明暗对切。 */
+
+.headerwrap,
+footer {
+    position: relative;
+    background: var(--hero);
+    color: var(--hero-text);
+}
+
+/* 整屏撑开：内容不足一屏时，页脚用 auto 外边距顶到视口底部，不再悬在半空。
+   body 变成纵向 flex 后，各区块自身仍是 100% 宽的块，排列顺序不变。
+   前提是 body 不能是滚动容器：遗留 body{overflow:auto} 已删，否则页脚会在 body 内部另起一套滚动。
+
+   撑高用 html{height:100%} + body{min-height:100%} 而不是 min-height:100vh：
+   vh 是按 window.innerHeight 算的，不扣横向滚动条；而 reset.css 的 html{overflow-y:scroll}
+   本身就占掉 15px 宽，所以窗口窄于 1215px 时必然再长出横向滚动条，100vh 比可视区高出 15px，
+   页脚底边正好压在横向滚动条底下，看着就是"贴不住底"。百分比走 html 的可视盒子，自带扣减。 */
+html {
+    height: 100%;
+    background: var(--background);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    /* 版面是按 1200 定宽做的（.wp），窗口更窄时横向滚动条会出现；把 body 也撑到 1200，
+       否则页头页脚那条带子只有可视区那么宽，往右滚就露出白底——跟 course-pages/common.css 同一做法 */
+    min-width: 1200px;
+}
+
+/* body 改成纵向 flex 之后，子元素默认 flex-shrink:1。遗留模板里有几块自带 min-height
+   （课程章节页的内容壳是 min-height:750px），而显式 min-height 会顶掉 flex 那条
+   "自动最小尺寸＝内容高度"的保护，于是这一整块被压回 750、内容溢到页脚底下，
+   页脚就卡在页面中段。禁止收缩，让每块都保持自身内容高度。 */
+body > * {
+    flex-shrink: 0;
+}
+
+body > footer {
+    flex: none;
+    margin-top: auto;
+}
+
+/* 浅色带的分层办法：带子本身只比内容区深一档，靠下沿这道淡影把页头"抬"起来，
+   避免浅色贴浅色看不出边界。原来深色版用的是 0.12，压在白内容上太脏，收到 0.06。 */
+.headerwrap::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 48px;
+    background: linear-gradient(180deg, oklch(0.21 0.02 262 / 0.06), transparent);
+    pointer-events: none;
+}
+
+/* 光晕加细栅格：只有一块平色会显得很闷。
+   深色版上白字配 0.22/0.30 的光晕是提亮，浅色带上同样的透明度会变成两块色斑，
+   所以压到 0.10/0.12；栅格线也从白色翻成墨色，不然在近白底上完全不可见。 */
+.headerwrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(620px 240px at 14% -20%, oklch(0.62 0.14 152 / 0.10), transparent 70%),
+        radial-gradient(760px 300px at 88% -10%, oklch(0.55 0.16 262 / 0.12), transparent 72%),
+        linear-gradient(oklch(0.21 0.02 262 / 0.035) 1px, transparent 1px) 0 0 / 100% 44px,
+        linear-gradient(90deg, oklch(0.21 0.02 262 / 0.035) 1px, transparent 1px) 0 0 / 44px 100%;
+    pointer-events: none;
+}
+
+.headerwrap > * {
+    position: relative;
+}
+
+/* 顶栏：登录注册与用户名那一行 */
+.header .top {
+    height: 40px;
+    line-height: 40px;
+    font-size: 13px;
+    color: var(--hero-muted);
+    border-bottom: 1px solid var(--hero-line);
+}
+
+.header .top .wp {
+    height: 40px;
+}
+
+.header .top .loginbtn,
+.header .top .registerbtn {
+    display: block;
+    float: right;
+    height: 26px;
+    line-height: 26px;
+    margin-left: 8px;
+    margin-top: 6px;
+    padding: 0 14px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--hero-line);
+    color: var(--hero-text);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.header .top .registerbtn {
+    background: var(--hero-text);
+    color: var(--hero);
+    border-color: var(--hero-text);
+}
+
+.header .top .loginbtn:hover,
+.header .top .registerbtn:hover {
+    background: var(--hero-fill-hover);
+}
+
+.header .top .registerbtn:hover {
+    background: var(--hero-text);
+    opacity: 0.88;
+}
+
+.header .top .personal {
+    height: auto;
+    float: right;
+    position: relative;
+}
+
+.header .top .user {
+    height: 30px;
+    line-height: 30px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.header .top .user dt {
+    margin-right: 10px;
+    width: 26px;
+    height: 26px;
+    margin-top: 2px;
+    overflow: hidden;
+    border-radius: 50%;
+    float: right;
+    border: 1px solid var(--hero-line);
+    background: var(--hero-fill);
+}
+
+.header .top .user dt img,
+.header .top .userdetail dt img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.header .top .user dd {
+    float: right;
+    color: var(--hero-text);
+    padding-right: 6px;
+}
+
+/* top_down.png 原图 26x38，直接放在 40px 的顶栏里会把行撑爆 */
+.header .top .user .down {
+    display: inline-block;
+    width: auto;
+    height: 12px;
+    margin: 0 0 0 4px;
+    vertical-align: middle;
+}
+
+.header .top .msg-num {
+    float: right;
+    margin-right: 16px;
+    height: 40px;
+    line-height: 40px;
+    width: auto;
+    padding-left: 22px;
+    background: url(../images/laba.png) no-repeat left center;
+    color: var(--hero-muted);
+}
+
+/* 用户浮层 */
+.header .top .userdetail {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    width: 300px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-pop);
+    padding: 16px;
+    z-index: 99;
+}
+
+/* 悬停展开改成纯 CSS。原来是 deco-common.js 给 .personal 绑 hover 去开关 display，
+   但 .personal 的下沿在 35px、卡片 top 是 40px，中间那 5px 谁都不命中
+   （elementFromPoint 在 35/37/39 三行返回的是外层 .wp），鼠标一往下挪
+   mouseleave 就先把卡片收掉了，看着就是"一动就没"。
+   ::before 是补那条缝的：它自己透明不改外观，但算作卡片的一部分，指针走过就不脱开。 */
+.header .top .userdetail::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 6px;
+}
+
+.header .top .personal:hover .userdetail {
+    display: block;
+}
+
+.header .top .userdetail dl {
+    width: 300px;
+    height: 64px;
+    overflow: hidden;
+}
+
+.header .top .userdetail dt {
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    border-radius: 50%;
+    float: left;
+}
+
+.header .top .userdetail dd {
+    width: 200px;
+    float: right;
+    line-height: 22px;
+    text-align: right;
+    color: var(--foreground);
+}
+
+.header .top .userdetail h2 {
+    color: var(--foreground);
+    font-size: 16px;
+}
+
+.header .top .userdetail .userbtns {
+    display: flex;
+    gap: 8px;
+    clear: both;
+    margin-top: 16px;
+}
+
+.header .top .userdetail .userbtns a {
+    flex: 1;
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    background: var(--muted);
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.header .top .userdetail .userbtns a.fl {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    flex: 2;
+}
+
+.header .top .userdetail .userbtns a:hover {
+    opacity: 0.9;
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* 主行：logo 与搜索 */
+.header .middle {
+    height: 104px;
+    clear: both;
+}
+
+.header .middle .wp {
+    height: 100%;
+    position: relative;
+}
+
+.header .middle .brand img,
+.header .middle img.fl {
+    height: 40px;
+    width: auto;
+    margin-top: 32px;
+}
+
+/* 个人中心那条矮一点的带子：logo 换成同宽的透明底版本，标题靠右 */
+.header2 .middle h1 {
+    float: left;
+    margin-left: 28px;
+    padding-left: 28px;
+    border-left: 1px solid var(--hero-line);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 40px;
+    height: 40px;
+    margin-top: 32px;
+    color: var(--hero-text);
+}
+
+.searchbox {
+    display: flex;
+    align-items: center;
+    width: 430px;
+    height: 44px;
+    margin-top: 30px;
+    padding: 0 6px 0 4px;
+    background: var(--hero-fill);
+    border: 1px solid var(--hero-line);
+    border-radius: var(--radius-pill);
+    -webkit-backdrop-filter: blur(var(--hero-blur));
+    backdrop-filter: blur(var(--hero-blur));
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.searchbox:focus-within {
+    border-color: var(--ring);
+    background: var(--hero-fill-hover);
+}
+
+.searchbox input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 42px;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: var(--hero-text);
+    text-indent: 8px;
+    font-size: 14px;
+}
+
+.searchbox input::placeholder {
+    color: var(--hero-muted);
+}
+
+.search_btn {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    box-sizing: content-box;
+    border-radius: 50%;
+    background: var(--hero-fill-hover);
+    cursor: pointer;
+}
+
+.search_btn:hover {
+    background: var(--hero-text);
+}
+
+/* select_arrow.png 实测是品牌绿的小箭头（#67ae56，9x5），深浅两版带子都读得出来；
+   下拉面板本身是 --card + --border + --shadow-pop，浅色带上靠阴影和描边分层。 */
+.selectContainer {
+    width: 84px;
+    height: 42px;
+    line-height: 42px;
+    position: relative;
+    margin: 0;
+    flex: none;
+}
+
+.selectOption {
+    color: var(--hero-text);
+    font-size: 14px;
+    background: url('../images/select_arrow.png') no-repeat right 10px center;
+    display: block;
+    cursor: pointer;
+    padding-left: 12px;
+}
+
+.selectMenu {
+    width: 120px;
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 44px;
+    margin: 0;
+    padding: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-pop);
+    z-index: 99;
+}
+
+.selectMenu li {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+.selectMenu li:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.selectContainer ul.dis {
+    display: block !important;
+}
+
+/* 导航：公共带上的胶囊，激活项反色成墨底亮字 */
+.header .nav {
+    height: 48px;
+}
+
+.header .nav ul {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 48px;
+}
+
+.header .nav li {
+    float: none;
+    width: auto;
+    height: auto;
+    position: relative;
+}
+
+.header .nav a {
+    display: block;
+    width: auto;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 16px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    border: 0;
+    color: var(--hero-muted);
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.header .nav a:hover {
+    color: var(--hero-text);
+    background: var(--hero-fill);
+}
+
+.header .nav .active > a {
+    color: var(--hero);
+    background: var(--hero-text);
+    font-weight: 600;
+}
+
+.header .nav .hot {
+    margin: 0;
+    margin-left: 4px;
+    position: static;
+    vertical-align: middle;
+}
+
+.headerwrap2,
+.header2 {
+    height: 144px;
+}
+
+.headerwrap2 .top,
+.header2 .top {
+    border-bottom-color: var(--hero-line);
+}
+
+/* 页脚：和页头同一条带子收口，靠 1px 上边线与内容区分开 */
+footer .site-footer {
+    padding: 36px 0 28px;
+    font-size: 13px;
+    color: var(--hero-muted);
+    border-top: 1px solid var(--hero-line);
+}
+
+footer .site-footer .brand img {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+footer .site-footer .footnav {
+    display: flex;
+    gap: 24px;
+    float: right;
+    height: 32px;
+    line-height: 32px;
+}
+
+footer .site-footer .footnav a {
+    color: var(--hero-muted);
+}
+
+footer .site-footer .footnav a:hover {
+    color: var(--hero-text);
+}
+
+footer .site-footer .rule {
+    height: 1px;
+    background: var(--hero-line);
+    clear: both;
+    margin: 22px 0 16px;
+}
+
+footer .site-footer .copy {
+    color: var(--hero-muted);
+}
+
+/* 面包屑在内容区，紧贴页头带下面，加一条上边距避免贴死。
+   配色也归这里：style.css 只留结构（宽高、行高、字距），颜色由这三个选择器统一决定。
+   原来是硬编码 #454545，且 a:hover 与基色同值＝悬停没有任何反馈。 */
+.crumbs {
+    padding-top: 4px;
+    color: var(--muted-foreground);
+}
+
+.crumbs li:last-child {
+    color: var(--foreground);
+}
+
+.crumbs a {
+    color: var(--muted-foreground);
+}
+
+.crumbs a:hover {
+    color: var(--foreground);
+}
+
+/* 收藏按钮的"已收藏"态：课程详情页两个（收藏课程 / 收藏机构）、教师详情页两个（收藏教师 / 收藏机构）。
+   四个控件的基态分散在 style.css 的四个页面作用域里（灰底、橙描边各两种），这里只补统一的变化态；
+   放在 chrome.css 是因为它排在 style.css 之后，且每条选择器都比对应基态多一个类，不用 !important 也能压住。
+   统一走浅红底 + 红字红描边，不用实心红底白字：那样星形只能保持白色，谈不上"图标同步改色"，
+   而且 95px 的实心块跟右侧两个描边按钮也不是一套语言。
+   文字用 --destructive-ink（压深一档）而不是 --destructive：后者直接当小号文字用在这块浅红底上只有 4.23，
+   ink 实测 5.83。描边继续用 --destructive。星形在 style.css 里已改成 mask + currentColor，跟着这里的 color 变红。 */
+.groupPurchase_detail .toppro .left .colectgroupbtn.collected,
+.groupPurchase_detail .toppro .right .btn.collected,
+.butler_detail_list .btn .collectionbtn.collected,
+.butler-company-box .btn.collected {
+    background-color: var(--destructive-soft);
+    border-color: var(--destructive);
+    color: var(--destructive-ink);
+}
+
+/* 分页条：五个模板共用这一个控件，改这里等于全站一起变。
+   遗留实现是 table + 30px 方块 + margin-left 撑间距，这里换成 flex + gap 的胶囊组。 */
+.pageturn {
+    height: auto;
+    margin: 36px auto;
+    display: flex;
+    justify-content: center;
+}
+
+.pageturn .pagelist {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: visible;
+}
+
+.pageturn li {
+    width: auto;
+    height: auto;
+    margin: 0;
+    float: none;
+    line-height: normal;
+    text-align: center;
+}
+
+.pageturn .long {
+    width: auto;
+}
+
+.pageturn a {
+    display: block;
+    box-sizing: border-box;
+    min-width: 34px;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--muted-foreground);
+    font-size: 13px;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pageturn a:hover {
+    color: var(--foreground);
+    border-color: var(--ring);
+    background: var(--accent);
+}
+
+.pageturn .active a {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+/* 省略号不是链接：去掉边框和底色，只留一个灰点 */
+.pageturn .none a {
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+.pageturn .none a:hover {
+    color: var(--muted-foreground);
+    background: transparent;
+}
+
+/* 消息列表把分页甩到右边。
+   遗留写法是 .pageright，模板里的类名却是 .pagerright（多一个 r），两边从来没对上过，
+   所以这条对齐一直没生效；这里按模板的真实类名补上。 */
+.pageturn.pagerright {
+    justify-content: flex-end;
+    margin-top: 12px;
+}

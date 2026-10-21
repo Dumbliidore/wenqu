@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}公开课列表 - 问渠在线{% endblock %}
 {% load static %}
+{% block custom_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/list.css' %}">
+{% endblock %}
 {% block custom_bread %}
 <section>
         <div class="wp">
@@ -14,9 +17,9 @@
 
 
 {% block content %}
-<section>
+<section class="page-course-list">
 	<div class="wp">
-		<div class="list" style="margin-top:0;">
+		<div class="list">
 			<div class="left layout">
 				<div class="head">
 					<ul class="tab_header">
@@ -31,7 +34,7 @@
                             {% for course in all_courses.object_list %}
                             <div class="box">
                                 <a href="{% url 'course:course_detail' course.id %}">
-                                    <img width="280" height="350" class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}"/>
+                                    <img class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}"/>
                                 </a>
                                 <div class="des">
                                     <a href="{% url 'course:course_detail' course.id %}">
@@ -61,7 +64,7 @@
                     <dl>
 						<dt>
 							<a target="_blank" href="{% url 'course:course_detail' hot_course.id %}">
-								<img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ hot_course.image }}"/>
+								<img class="scrollLoading" src="{{ MEDIA_URL }}{{ hot_course.image }}" alt="{{ hot_course.name }}"/>
 							</a>
 						</dt>
 						<dd>

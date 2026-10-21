@@ -1,0 +1,847 @@
+/* 个人中心（usercenter-base.html 及其 5 个子页）。
+   只作用于 .page-usercenter —— 这个类挂在 usercenter-base.html 的 div.wp.list.personal_list 上，
+   一处接入，五个子页全部生效。
+   遗留规则集中在 style.css 的 .personal_list / .butler_list / .messagelist 三族（多为定宽 + float + 写死高度），
+   所以这里的选择器普遍比遗留多一层 .personal_list，用来压住它们；遗留带 !important 的两处
+   （.Releasecont 的 border:0、.module1_5/.companycenter .box 的 width）在本文件里同样加了 !important。
+   结构约束（改了会让 JS 失效，已核对 deco-user.js / validate.js / jquery.upload.js）：
+   文本 input 的直接父必须是 li；提示 <i class="error-tips"> 必须是 input 的同级；
+   头像三层 label.changearea > #avatardiv.pic > img.js-img-show 与兄弟 span.upload-inp-box > input.js-img-up 的关系不能变；
+   .dialog 整块只用样式碰，结构、id、class 都不动。 */
+
+/* ===== 两栏骨架 ===== */
+/* 侧栏 + 主区。主区用 minmax(0,1fr) 兜住内部长文本，避免撑破 1200 的定宽栅格 */
+.page-usercenter.personal_list {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    margin-top: 28px;
+    margin-bottom: 44px;
+}
+
+.page-usercenter.personal_list > .right {
+    width: auto;
+    float: none;
+    overflow: visible;
+}
+
+/* ===== 左侧导航 ===== */
+/* 只取直接子元素：个人资料页的头像栏也叫 .left，不能一起改 */
+.page-usercenter.personal_list > .left {
+    width: auto;
+    float: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 8px;
+}
+
+.page-usercenter.personal_list > .left li {
+    width: auto;
+    height: 42px;
+    line-height: 42px;
+    margin: 2px 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: none;
+    font-size: 14px;
+}
+
+.page-usercenter.personal_list > .left a {
+    width: auto;
+    height: 100%;
+    margin: 0;
+    padding: 0 14px;
+    display: block;
+    color: var(--foreground);
+}
+
+.page-usercenter.personal_list > .left li:hover {
+    background: var(--muted);
+    border-left: 0;
+}
+
+.page-usercenter.personal_list > .left li.active2 {
+    background: var(--brand-soft);
+    border-left: 0;
+}
+
+.page-usercenter.personal_list > .left li.active2 a {
+    color: var(--brand-ink);
+    font-weight: 600;
+}
+
+/* ===== 卡片外框：标题条 + 内容条拼成一张卡 ===== */
+.page-usercenter .personal_des {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+/* 遗留 .Releasecont{border:0 !important}，压它必须同样带 !important */
+.page-usercenter .personal_des.Releasecont {
+    border: 1px solid var(--border) !important;
+    border-bottom: 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.page-usercenter .personal_des.permessage {
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    margin-top: -1px;
+}
+
+.page-usercenter .personal_des .head {
+    height: 54px;
+    line-height: 54px;
+    padding: 0 20px;
+    background: var(--card);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-usercenter .personal_des .head h1 {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+/* 带 tab 的头：不再压行高，让胶囊自己定高 */
+.page-usercenter .permessage .head {
+    height: auto;
+    line-height: normal;
+    padding: 11px 14px;
+}
+
+/* ===== tab 胶囊（收藏三分类 / 消息） ===== */
+.page-usercenter .tab_header {
+    display: flex;
+    gap: 8px;
+    height: auto;
+    line-height: normal;
+    text-indent: 0;
+}
+
+.page-usercenter .tab_header li {
+    float: none;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    text-indent: 0;
+}
+
+.page-usercenter .tab_header a {
+    display: block;
+    box-sizing: border-box;
+    width: auto;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--muted-foreground);
+    font-size: 14px;
+}
+
+.page-usercenter .tab_header a:hover {
+    border-color: var(--ring);
+    color: var(--foreground);
+}
+
+.page-usercenter .tab_header .active {
+    border-bottom: 0;
+}
+
+.page-usercenter .tab_header .active a {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+/* ===== 课程卡（我的课程 / 收藏课程） ===== */
+/* 遗留把卡片钉成 214/229 宽、300 高，封面还写死 214x190；这里宽度交给网格、图片统一 158 裁切 */
+.page-usercenter .companycenter {
+    line-height: normal;
+}
+
+.page-usercenter.personal_list .group_list.brief {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: auto;
+    height: auto;
+    border: 0;
+    padding: 20px;
+}
+
+.page-usercenter.personal_list .group_list .module1_5.box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: auto !important;
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.page-usercenter.personal_list .group_list .module1_5.box:hover {
+    border-color: var(--ring);
+    box-shadow: var(--shadow-sm);
+}
+
+/* 遗留 hover 把整张封面压到 50% 透明，卡片描边已经够表达悬停了 */
+.page-usercenter.personal_list .group_list .box:hover img {
+    opacity: 1;
+}
+
+.page-usercenter.personal_list .group_list .box img {
+    display: block;
+    width: 100%;
+    height: 158px;
+    object-fit: cover;
+}
+
+.page-usercenter.personal_list .group_list .box .des {
+    position: static;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 10px;
+    row-gap: 6px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 14px 16px 12px;
+    border: 0;
+    flex: 1;
+}
+
+.page-usercenter.personal_list .group_list .box .des > a {
+    grid-column: 1 / -1;
+    display: block;
+}
+
+.page-usercenter.personal_list .group_list .des h2 {
+    height: auto;
+    line-height: 1.5;
+    /* 遗留 .companycenter .group_list .box .des h2 的 18px 带 !important，只能对压 */
+    font-size: 15px !important;
+    font-weight: 600;
+    color: var(--foreground);
+    word-break: break-all;
+}
+
+.page-usercenter.personal_list .group_list .box:hover .des h2 {
+    color: var(--brand-ink);
+}
+
+/* float 在网格项上不生效，reset 的 .fl/.fr !important 因此只影响盒子本身，不破坏排版 */
+.page-usercenter.personal_list .group_list .des span {
+    position: static;
+    display: block;
+    float: none;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter.personal_list .group_list .des .fr {
+    justify-self: end;
+}
+
+/* 遗留 .key{color:var(--warning)!important} 用 !important 钉死了橙色，
+   这里只能同样用 !important 才能把数字压回中性前景色 */
+.page-usercenter.personal_list .group_list .des .key {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--foreground) !important;
+}
+
+.page-usercenter.personal_list .group_list .bottom {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    padding: 11px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.page-usercenter.personal_list .group_list .bottom span {
+    display: block;
+    float: none;
+    width: auto;
+    height: auto;
+    line-height: normal;
+    text-align: left;
+    background: none;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+/* 收藏数没有图标说不出它是什么，还是留个星 */
+.page-usercenter.personal_list .group_list .bottom .star {
+    padding-left: 18px;
+    background: url(../images/star.png) no-repeat left center;
+    cursor: default;
+}
+
+.page-usercenter.personal_list .group_list .bottom .delete-group,
+.page-usercenter.personal_list .group_list .bottom .delete-group:hover {
+    width: 24px;
+    height: 24px;
+    text-indent: 0;
+    background: url(../images/pic12.png) no-repeat center center;
+}
+
+.page-usercenter.personal_list .group_list .bottom .delete-group:hover {
+    background-image: url(../images/pic13.png);
+}
+
+/* ===== 收藏行（机构 / 教师）与消息行 ===== */
+.page-usercenter .messagelist {
+    width: auto;
+    border: 0;
+    line-height: normal;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter .messagelist .messages,
+.page-usercenter .messagelist .butler_list {
+    position: relative;
+    float: none;
+    width: auto;
+    padding: 18px 20px;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-usercenter .messagelist .messages:last-child,
+.page-usercenter .messagelist .butler_list:last-child {
+    border-bottom: 0;
+}
+
+.page-usercenter .messagelist dl.des {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    column-gap: 18px;
+    align-items: center;
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: 0;
+    /* 遗留 .butler_list .des 是 position:relative；撤掉它，删除按钮才钉在整行右侧而不是这一列 */
+    position: static;
+    /* reset 里 .fr{float:right !important} 打在这个 dl 上，只能同样用 !important 撤掉 */
+    float: none !important;
+}
+
+.page-usercenter .messagelist dl.des > dt {
+    width: 112px;
+    height: auto;
+    margin: 0;
+    float: none;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: var(--muted);
+}
+
+.page-usercenter .messagelist dl.des > dt img {
+    display: block;
+    width: 100%;
+    height: 64px;
+    object-fit: contain;
+}
+
+/* 老师头像是方的，按 64x64 裁成正圆；遗留给了它 5px 描边，这里一并撤掉。
+   112 的图标列里让圆像居中，跟机构 logo 的中线对齐 */
+.page-usercenter .messagelist dl.des.users > dt {
+    width: 64px;
+    height: 64px;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    justify-self: center;
+}
+
+.page-usercenter .messagelist dl.des.users > dt img {
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 46px 右落款位 = 按钮距行边 20 + 按钮宽 24，正文换行提前、不会爬到删除按钮底下。
+   这个内边距挂在 dd 上而不是 dl 上：遗留 .messages.butler_list.company .des{padding:0}
+   比挂在 dl 上的选择器更具体，会被它压掉 */
+.page-usercenter .messagelist dl.des > dd {
+    float: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding-right: 46px;
+}
+
+.page-usercenter .messagelist dl.des h1 {
+    height: auto;
+    margin: 0;
+    line-height: 24px;
+    font-size: 16px;
+    color: var(--foreground);
+}
+
+.page-usercenter .messagelist dl.des h1 a {
+    color: var(--foreground);
+}
+
+.page-usercenter .messagelist dl.des h1 a:hover {
+    color: var(--brand-ink);
+}
+
+.page-usercenter .messagelist .cont {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 8px 0 0;
+}
+
+.page-usercenter .messagelist .cont li {
+    float: none;
+    display: block;
+    width: auto;
+    height: auto;
+    padding-left: 0;
+    line-height: 20px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter .messagelist .cont li span {
+    color: var(--foreground);
+}
+
+/* 图标背景与 .c7/.time 的类分配本身是矛盾的（类名和图对不上），统一去掉图标 */
+.page-usercenter .messagelist .cont .c7,
+.page-usercenter .messagelist .cont .c8,
+.page-usercenter .messagelist .cont .time {
+    background: none;
+    text-indent: 0;
+}
+
+.page-usercenter .messagelist dl.des > dd > .c8 {
+    display: block;
+    margin-top: 8px;
+    background: none;
+    text-indent: 0;
+    font-size: 13px;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter .messagelist .delete {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    margin-top: -12px;
+    background: url(../images/pic12.png) no-repeat center center !important;
+    cursor: pointer;
+}
+
+.page-usercenter .messagelist .delete:hover {
+    background-image: url(../images/pic13.png) !important;
+}
+
+/* 我的消息：一行一条，时间在上方、正文在下 */
+.page-usercenter .messagelist .messages .fr {
+    float: none !important;
+    width: auto;
+    height: auto;
+}
+
+.page-usercenter .messagelist .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    line-height: normal;
+}
+
+.page-usercenter .messagelist .top span {
+    display: inline;
+    width: auto;
+}
+
+.page-usercenter .messagelist .fl {
+    float: none !important;
+    width: auto;
+    height: auto;
+}
+
+.page-usercenter .messagelist .time {
+    background: none;
+    text-indent: 0;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter .messagelist .messages p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--foreground);
+}
+
+/* ===== 空态 ===== */
+/* 收藏/课程列表是网格，空态要横跨整行 */
+.page-usercenter .uc-empty {
+    grid-column: 1 / -1;
+    padding: 40px 20px;
+    margin: 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted-foreground);
+}
+
+.page-usercenter .uc-empty a {
+    color: var(--brand-ink);
+}
+
+/* ===== 个人资料：头像列 + 字段列 ===== */
+.page-usercenter .personal_des .inforcon {
+    display: grid;
+    grid-template-columns: 208px minmax(0, 1fr);
+    width: auto;
+    border: 0;
+}
+
+.page-usercenter.personal_list .inforcon > .left {
+    float: none;
+    width: auto;
+    height: auto;
+    padding: 24px 16px;
+    text-align: center;
+    border: 0;
+    border-right: 1px solid var(--border);
+    background: none;
+}
+
+.page-usercenter.personal_list .inforcon > .left .pic {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+    overflow: hidden;
+    border: 3px solid var(--border);
+    border-radius: 50%;
+}
+
+.page-usercenter.personal_list .inforcon > .left .pic img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+/* 上传按钮必须留在 span.upload-inp-box 里，input[type=file] 靠透明盖在它上面。
+   reset 的 .fl{float:left !important} 会让它离开居中流，只能同样回敬 !important */
+.page-usercenter.personal_list .inforcon .upload-inp-box {
+    display: block;
+    float: none !important;
+    width: 100px;
+    margin: 0 auto;
+}
+
+.page-usercenter.personal_list .inforcon .upload-inp-box .button {
+    margin: 0;
+}
+
+.page-usercenter.personal_list .inforcon .left .button,
+.page-usercenter .inforcon .left .btn {
+    box-sizing: border-box;
+    width: 100px;
+    height: 34px;
+    line-height: 32px;
+    margin: 0 auto;
+    padding: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--foreground) !important;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.page-usercenter .inforcon .left .button:hover {
+    border-color: var(--ring);
+    background: var(--muted);
+}
+
+/* 头像下面那颗「修改密码」，用一条横线与头像区分开 */
+.page-usercenter .inforcon .left .avatar-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.page-usercenter.personal_list .inforcon .right {
+    float: none;
+    width: auto !important;
+    height: auto;
+    padding: 6px 24px 20px;
+    border-left: 0;
+    font-size: 14px;
+}
+
+.page-usercenter.personal_list .inforcon .right > li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    float: none;
+    width: auto;
+    height: auto;
+    padding: 12px 0;
+    line-height: normal;
+    text-indent: 0;
+    color: var(--foreground);
+    border-bottom: 1px solid var(--border);
+}
+
+/* 标签原来是 &nbsp; 撑出来的宽度，换成真元素由 CSS 对齐 */
+.page-usercenter.personal_list .inforcon .right .lab {
+    flex: none;
+    width: 56px;
+    color: var(--muted-foreground);
+    font-size: 13px;
+}
+
+.page-usercenter.personal_list .inforcon .right > li .error-tips {
+    margin-left: 4px;
+    font-size: 12px;
+    font-style: normal;
+    color: var(--destructive);
+}
+
+.page-usercenter.personal_list .inforcon .right li input[type=text] {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 320px;
+    height: 36px;
+    margin: 0;
+    padding: 0 12px;
+    text-indent: 0;
+    color: var(--foreground);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+}
+
+.page-usercenter.personal_list .inforcon .right li input[type=text]:focus {
+    border-color: var(--ring);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
+/* deco-user.js 给聚焦的 li 加 .focus，遗留规则会反色 input 本身，这里按焦点环处理 */
+.page-usercenter.personal_list .inforcon .right li.focus input {
+    background: var(--card) !important;
+    color: var(--foreground) !important;
+}
+
+/* validate.js 校验失败时把 .errorput 打在该 input 的父 li 上（成功只加 .rightput，没有可见样式）。
+   遗留那条 li.errorput input 是条空规则，从来没画过红，所以这里补上 */
+.page-usercenter.personal_list .inforcon .right li.errorput input[type=text] {
+    border-color: var(--destructive);
+    box-shadow: var(--focus-ring-danger);
+}
+
+/* 只读邮箱：宽度跟其他输入框对齐；遗留 input.borderno{width:252px!important;border:0} 同样带 !important。
+   选择器多挂一个 li + [type=text]，好过上面那条 input[type=text] 的规则，才能把浅灰底盖上去 */
+.page-usercenter.personal_list .inforcon .right li input.borderno[type=text] {
+    width: 320px !important;
+    max-width: 100%;
+    margin-right: 0;
+    color: var(--muted-foreground);
+    background: var(--muted);
+}
+
+.page-usercenter .inforcon .right .green {
+    text-indent: 0;
+    color: var(--brand-ink);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.page-usercenter.personal_list .inforcon .right li label {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 18px;
+    color: var(--foreground);
+}
+
+.page-usercenter.personal_list .inforcon .right li label input[type=radio] {
+    margin: 0;
+}
+
+.page-usercenter.personal_list .inforcon .right .button {
+    display: block;
+    height: auto;
+    margin-top: 20px;
+    padding: 0;
+    text-align: left;
+    border-bottom: 0;
+}
+
+/* 遗留 .heibtn 用 150px 高 + 50px 上边距给按钮撑出一段空白，两个都带 !important，只能对压 */
+.page-usercenter.personal_list .inforcon .right .button.heibtn {
+    height: auto !important;
+    border-bottom: 0 !important;
+}
+
+.page-usercenter.personal_list .inforcon .right .button.heibtn input {
+    margin-top: 0 !important;
+}
+
+.page-usercenter.personal_list .inforcon .right .button input {
+    box-sizing: border-box;
+    width: 120px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background: var(--primary);
+    border: 0;
+    border-radius: var(--radius-lg);
+    color: var(--primary-foreground);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.page-usercenter.personal_list .inforcon .right .button input:hover {
+    background: var(--brand);
+}
+
+.page-usercenter .inforcon .clearfix {
+    display: block;
+}
+
+/* ===== 弹层（修改密码 / 修改邮箱 / 提交成功） ===== */
+/* 结构一个字节没动：显隐由 JS 写内联 display，位置由 centerDialog 写内联 margin-top，
+   这里只换皮。#jsDialog、#dialogBg 只出现在 usercenter-base.html，用 id 选不会再影响别的页面。 */
+#jsDialog .dialogbox {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-pop);
+}
+
+#jsDialog .dialogbox h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+#jsDialog .dialogbox .close {
+    right: 14px;
+    top: 14px;
+    opacity: .5;
+}
+
+#jsDialog .dialogbox .close:hover {
+    opacity: 1;
+}
+
+#jsDialog .dialogbox .cont,
+#jsDialog .dialogbox.changephone > p {
+    font-size: 14px;
+    color: var(--muted-foreground);
+}
+
+#jsDialog .dialogbox .box {
+    border-color: var(--border);
+    border-radius: var(--radius-lg);
+}
+
+#jsDialog .dialogbox .box span {
+    border-right-color: var(--border);
+    font-size: 13px;
+}
+
+#jsDialog .dialogbox .box input,
+#jsDialog .dialogbox .box input[type=text] {
+    color: var(--foreground);
+    font-size: 14px;
+}
+
+#jsDialog .dialogbox .box.focus {
+    border-color: var(--ring);
+    box-shadow: var(--focus-ring);
+}
+
+#jsDialog .dialogbox .box.errorput,
+#jsDialog .dialogbox .valcode.errorput input {
+    border-color: var(--destructive);
+    box-shadow: var(--focus-ring-danger);
+}
+
+/* 错误提示从橙底白字换成浅红底红字；遗留 color:!important 只能同级回敬 */
+#jsDialog .dialogbox .error {
+    background: var(--destructive-soft);
+    color: var(--destructive) !important;
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+}
+
+#jsDialog .dialogbox .button input,
+#jsDialog .dialogbox .getcode {
+    box-sizing: border-box;
+    height: 35px;
+    padding: 0 20px;
+    background: var(--primary);
+    border: 0 !important;
+    border-radius: var(--radius-lg);
+    color: var(--primary-foreground) !important;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#jsDialog .dialogbox .button input:hover,
+#jsDialog .dialogbox .getcode:hover {
+    background: var(--brand);
+}
+
+/* 验证码那一格：输入框与按钮都被绝对钉在 .box 右端，按钮压在输入框上，
+   不给输入框留出按钮宽度，正文会被盖住（遗留样式就是这么叠的） */
+#jsDialog .dialogbox .box .email_code {
+    padding-right: 120px;
+}
+
+#jsDialog .dialogbox .getcode {
+    margin: 5px 5px 0 0 !important;
+    padding: 0 12px;
+}
+
+/* 发送成功后进入倒计时，遗留用 .checked 表达，别再让它看起来是可点的实心按钮 */
+#jsDialog .dialogbox .getcode.checked {
+    background: var(--muted);
+    color: var(--muted-foreground) !important;
+}
+
+#jsDialog .successbox h2 {
+    font-size: 16px;
+    color: var(--foreground);
+}

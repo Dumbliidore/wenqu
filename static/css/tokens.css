@@ -1,0 +1,86 @@
+/* 设计令牌层。
+   令牌命名与中性色取值抄自 basecoat-css 1.0.2 的 dist/base/base.css（:root / .dark 段），
+   圆角刻度取 nova 风格：按钮 8px、卡片 12px、卡片本身不加阴影，靠 1px 边框分隔。
+   basecoat 的 --primary 原值就是无彩近黑，本站品牌绿不占主色位，另立 --brand 作点缀。 */
+
+:root {
+  /* 圆角：basecoat 用一个 --radius 派生其余各档 */
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-pill: 9999px;
+
+  /* 中性面 */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --popover: oklch(1 0 0);
+  --muted: oklch(0.97 0 0);
+  /* 本站遗留的大量中灰（#717171 一类）落在这档：basecoat 中性刻度在 0.205 与 0.556 之间没有更近的一档，
+     所以顶栏、次级按钮等中灰底也取 --muted-foreground，颜色几乎不变。 */
+  --muted-foreground: oklch(0.556 0 0);
+  /* --muted-foreground 在纯白上有 4.77，压到 --muted（0.97）那层浅灰面只剩 4.35，掉到 AA 线下。
+     次级文字落在浅灰区块里时用这一档：白底 6.01、浅灰底 5.51。 */
+  --muted-ink: oklch(0.50 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  /* 次级面 */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+
+  /* 悬停衬底：basecoat 里 accent 是无彩浅灰，不是强调色 */
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  /* 主色：无彩近黑，实心按钮、分页选中、弹层遮罩用 */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* 品牌绿，降为点缀：导航激活、成功态、数字高亮 */
+  --brand: #4fb137;
+  --brand-dark: #3d9328;
+  --brand-soft: #eef7ec;
+  --brand-foreground: oklch(0.985 0 0);
+  /* --brand 与 --brand-dark 当小号文字用都不达标：白底上分别只有 2.74 和 3.89，
+     AA 正文要 4.5。--brand-ink 是同色相压暗到 6.64 的一档，只给文字；
+     按钮底色、描边、色块继续用 --brand / --brand-dark，观感不变。 */
+  --brand-ink: #276a18;
+
+  /* 语义色 */
+  --destructive: oklch(0.577 0.245 27.325);
+  /* --destructive 直接当小号文字用只剩 4.77（白底）/ 4.23（压在 --destructive-soft 上），
+     和 --brand-ink 同样的道理再压深一档：浅红块上实测 5.83、白底 6.57。
+     描边、图标等色块继续用 --destructive。 */
+  --destructive-ink: oklch(0.50 0.21 27);
+  --destructive-soft: #fdeeee;
+  --warning: #ff7800;
+  /* 同上：#ff7800 在白底只有 2.65，橙色的数字/提示文字走这一档（白底 5.49、浅灰面 5.04）。 */
+  --warning-ink: #b04a00;
+  --warning-soft: #fff4e8;
+
+  /* 公共带（页头、首页 hero、页脚）：浅色系。
+     底色不是纯白，比 --background 压深一点点并留一丝蓝，靠下沿那道渐隐阴影和 1px 线跟内容区分层。
+     文字反过来取深色，所以 --hero-text 不再表示"亮字"——压在图片上的箭头和指示点另用 --on-image。 */
+  --hero: oklch(0.965 0.008 262);
+  --hero-elev: oklch(0.99 0.004 262);
+  --hero-text: oklch(0.21 0.02 262);
+  --hero-muted: oklch(0.45 0.02 262);
+  --hero-line: oklch(0.21 0.02 262 / 0.11);
+  --hero-fill: oklch(0.21 0.02 262 / 0.05);
+  --hero-fill-hover: oklch(0.21 0.02 262 / 0.10);
+  --hero-blur: 12px;
+
+  /* 永远压在照片/轮播图上的浅色，不随公共带明暗变 */
+  --on-image: oklch(0.985 0 0);
+
+  /* 阴影：nova 风格默认不用，仅保留浮层与焦点环两档 */
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.06);
+  --shadow-pop: 0 4px 12px oklch(0 0 0 / 0.12);
+  --focus-ring: 0 0 0 3px oklch(0.708 0 0 / 0.3);
+  --focus-ring-danger: 0 0 0 3px oklch(0.577 0.245 27.325 / 0.25);
+}

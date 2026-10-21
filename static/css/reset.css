@@ -34,7 +34,7 @@ abbr[title], acronym[title] { /* 注：1.ie6 不支持 abbr; 2.这里用了属�
 q:before, q:after { content: ''; }
 
 /* 重置表单元素 */
-legend { color: #000; } /* for ie6 */
+legend { color: var(--foreground); } /* for ie6 */
 fieldset,abbr, img,a img, :link img, :visited img {
        border:0px; /* img 搭车：让链接里的 img 无边框 */
 }
@@ -50,10 +50,10 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
-th{border:1px solid #eaeaea;border-top:0;text-align:center;font-weight: bold;}
-td{border:1px solid #eaeaea;}
+th{border:1px solid var(--border);border-top:0;text-align:center;font-weight: bold;}
+td{border:1px solid var(--border);}
 /*input*/
-input,textarea{text-indent:2px;border:1px solid #ccc;}
+input,textarea{text-indent:2px;border:1px solid var(--border);}
 input[type="checkbox"], input[type="radio"]{
     background: transparent;
     border: 0;

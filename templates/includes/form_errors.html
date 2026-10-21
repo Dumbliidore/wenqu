@@ -1,0 +1,6 @@
+{# 表单错误汇总块。外层用 div：Django 把 field.errors 渲染成 <ul class="errorlist">，写进 <p> 会被解析器提前闭合，列表掉到色块外面。 #}
+{% if form.errors %}
+    <div class="form-note bad">
+        {% for field, error in form.errors.items %}{{ error }}{% endfor %}
+    </div>
+{% endif %}

@@ -1,48 +1,14 @@
-//刷新验证码
-function refresh_captcha(event){
-    $.get("/captcha/refresh/?"+Math.random(), function(result){
-        $('#'+event.data.form_id+' .captcha').attr("src",result.image_url);
-        $('#id_captcha_0').attr("value",result.key);
+// 登录族四页的脚本。原来这里还有轮播初始化和 tab 切换，两块的标记都随页面改版删掉了；
+// 输入框的 focus/blur 高亮改由 CSS 的 :focus-within 负责，也不再需要绑类名。
+$(function () {
+    // 点击验证码换一张：图片地址和隐藏域里的 key 要一起换，
+    // 只换图片的话提交时校验的还是旧那一张。
+    $('.captcha').on('click', function () {
+        var img = $(this);
+        $.get('/captcha/refresh/?' + Math.random(), function (result) {
+            img.attr('src', result.image_url);
+            $('#id_captcha_0').attr('value', result.key);
+        });
+        return false;
     });
-    return false;
-}
-
-$(function() {
-    var unslider = $('.imgslide').unslider({
-        speed: 500,
-        delay: 3000,
-        complete: function() {},
-        keys: true,
-        dots: true,
-        fluid: false
-    });
-    $('.unslider-arrow').click(function() {
-        var fn = this.className.split(' ')[1];
-        unslider.data('unslider')[fn]();
-    });
-
-    $('.tab > h2').click(function(){
-        var _self = $(this),
-            index = _self.index();
-        _self.addClass('active').siblings().removeClass('active');
-        $('.tab-form').eq(index).removeClass('hide').siblings('.tab-form').addClass('hide');
-    });
-
-    //input的focus和blur效果
-	$('input[type=text]').focus(function(){
-		$(this).parent().removeClass('blur').addClass('focus');
-	});
-	$('input[type=text]').blur(function(){
-		$(this).parent().removeClass('focus').addClass('blur');
-	});
-	$('input[type=password]').focus(function(){
-		$(this).parent().removeClass('blur').addClass('focus');
-	});
-	$('input[type=password]').blur(function(){
-		$(this).parent().removeClass('focus').addClass('blur');
-	});
-
-    //注册、找回密码页验证码点击刷新
-    $('#email_register_form .captcha').click({'form_id':'email_register_form'},refresh_captcha);
-    $('#jsFindPwdForm .captcha').click({'form_id':'jsFindPwdForm'},refresh_captcha);
 });

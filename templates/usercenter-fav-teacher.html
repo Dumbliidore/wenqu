@@ -27,9 +27,9 @@
             <div class="personal_des permessage">
                 <div class="head">
                     <ul class="tab_header messagehead">
-                        <li><a href="{% url 'users:myfav_org' %}">课程机构</a> </li>
-                        <li class="active"><a href="{% url 'users:myfav_teacher' %}">授课教师 </a></li>
-                        <li><a href="{% url 'users:myfav_course' %}">公开课程</a></li>
+                        <li><a href="{% url 'users:myfav_org' %}">授课机构</a></li>
+                        <li class="active"><a href="{% url 'users:myfav_teacher' %}">授课教师</a></li>
+                        <li><a href="{% url 'users:myfav_course' %}">公开课</a></li>
                     </ul>
                 </div>
                 <div class="messagelist">
@@ -38,7 +38,7 @@
                         <dl class="des users">
                             <dt>
                                 <a href="{% url 'org:teacher_detail' teacher.id %}">
-                                    <img width="100" height="100" src="{{ MEDIA_URL }}{{ teacher.image }}"/>
+                                    <img src="{{ MEDIA_URL }}{{ teacher.image }}" alt="{{ teacher.name }}"/>
                                 </a>
                             </dt>
                             <dd>
@@ -59,6 +59,8 @@
                             <div class="delete jsDeleteFav_teacher" data-favid="{{ teacher.id }}"></div>
                         </dl>
                     </div>
+                    {% empty %}
+                    <p class="uc-empty">还没有收藏的老师，去 <a href="{% url 'org:teacher_list' %}">授课教师</a> 看看。</p>
                     {% endfor %}
 
                 </div>

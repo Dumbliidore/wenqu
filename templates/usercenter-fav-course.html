@@ -27,9 +27,9 @@
             <div class="personal_des permessage">
                 <div class="head">
                     <ul class="tab_header messagehead">
-                        <li><a href="{% url 'users:myfav_org' %}">课程机构</a> </li>
-                        <li><a href="{% url 'users:myfav_teacher' %}">授课教师 </a></li>
-                        <li class="active"><a href="{% url 'users:myfav_course' %}">公开课程</a></li>
+                        <li><a href="{% url 'users:myfav_org' %}">授课机构</a></li>
+                        <li><a href="{% url 'users:myfav_teacher' %}">授课教师</a></li>
+                        <li class="active"><a href="{% url 'users:myfav_course' %}">公开课</a></li>
                     </ul>
                 </div>
                 <div class="companycenter">
@@ -37,7 +37,7 @@
                         {% for fav_course in course_list %}
                         <div class="module1_5 box">
                             <a href="{% url 'course:course_detail' fav_course.id %}">
-                                <img width="214" height="190" src="{{ MEDIA_URL }}{{ fav_course.image }}"/>
+                                <img src="{{ MEDIA_URL }}{{ fav_course.image }}" alt="{{ fav_course.name }}"/>
                             </a>
                             <div class="des">
                                 <a href="{% url 'course:course_detail' fav_course.id %}"><h2>{{ fav_course.name }}</h2></a>
@@ -49,6 +49,8 @@
                                 <span class="delete-group fr jsDeleteFav_course" data-favid="{{ fav_course.id }}"></span>
                             </div>
                         </div>
+                        {% empty %}
+                        <p class="uc-empty">还没有收藏的课程，去 <a href="{% url 'course:course_list' %}">公开课</a> 看看。</p>
                         {% endfor %}
 
 

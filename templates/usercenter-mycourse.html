@@ -27,25 +27,24 @@
 		<div class="personal_des permessage">
 			<div class="companycenter">
 				<div class="group_list brief">
-            {% for user_course in user_courses %}
-                    <div class="module1_5 box">
-                            <a href="{% url 'course:course_detail' user_course.course.id %}">
-                                <img width="214" height="190" class="scrollLoading" src="{{ MEDIA_URL }}{{ user_course.course.image }}"/>
-                            </a>
-                            <div class="des">
-                                <a href="{% url 'course:course_detail' user_course.course.id %}"><h2>{{ user_course.course.name }}</h2></a>
-                                <span class="fl">课时：<i class="key">{{ user_course.course.learn_times }}</i></span>
-                                <span class="fr">学习人数：{{ user_course.course.students }}</span>
-                            </div>
-                            <div class="bottom">
-                                <span class="fl">{{ user_course.course.course_org.name }}</span>
-                                <span class="star fr">{{ user_course.course.fav_nums }}</span>
-                            </div>
-                        </div>
-            {% endfor %}
-
-
-
+					{% for user_course in user_courses %}
+					<div class="module1_5 box">
+						<a href="{% url 'course:course_detail' user_course.course.id %}">
+							<img src="{{ MEDIA_URL }}{{ user_course.course.image }}" alt="{{ user_course.course.name }}"/>
+						</a>
+						<div class="des">
+							<a href="{% url 'course:course_detail' user_course.course.id %}"><h2>{{ user_course.course.name }}</h2></a>
+							<span class="fl">课时：<i class="key">{{ user_course.course.learn_times }}</i></span>
+							<span class="fr">学习人数：{{ user_course.course.students }}</span>
+						</div>
+						<div class="bottom">
+							<span class="fl">{{ user_course.course.course_org.name }}</span>
+							<span class="star fr">{{ user_course.course.fav_nums }}</span>
+						</div>
+					</div>
+					{% empty %}
+					<p class="uc-empty">还没有已加入的课程，去 <a href="{% url 'course:course_list' %}">公开课</a> 看看。</p>
+					{% endfor %}
 				</div>
 			</div>
 		</div>

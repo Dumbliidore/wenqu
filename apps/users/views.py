@@ -236,7 +236,7 @@ class LogOutView(View):
 
     def get(self, request):
         logout(request)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("login"))
 
 
 class UserInfoView(LoginRequiredMixin, View):

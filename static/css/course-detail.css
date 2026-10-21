@@ -1,0 +1,543 @@
+/* 课程详情页 /course/detail/<id>/。
+   只作用于 .page-course-detail，遗留规则留在 style.css 里不动，这里按整站语言覆盖：
+   卡片靠 1px --border + --radius-xl 分隔、不加阴影，两栏骨架沿用站点的 900 + 280，
+   封面出图用 object-fit 不拉伸（原图 240x135 / 200x188），机构 logo 按原比例居中放置。
+   注意：未收藏/已收藏的配色真源在 chrome.css 的四个 .collected 选择器，这里只补几何，不跟它抢颜色。 */
+
+/* ===== 顶部信息卡：封面 + 课程信息 + 机构栏 ===== */
+.page-course-detail .groupPurchase_detail .toppro {
+    display: flex;
+    align-items: stretch;
+    gap: 24px;
+    width: auto;
+    height: auto;
+    margin-top: 24px;
+    padding: 24px;
+    overflow: visible;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .left {
+    display: flex;
+    gap: 24px;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    float: none;
+}
+
+/* 封面：280x180 的浅灰托，contain 出图，240x135 的原图不放不糊、200x188 的也不裁 */
+.page-course-detail .groupPurchase_detail .toppro .picbox {
+    flex: none;
+    width: 280px;
+    height: auto;
+    float: none;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .tb-booth {
+    width: 100%;
+    height: 180px;
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .tb-booth img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .des {
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    float: none;
+    line-height: 1.6;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .des h1 {
+    margin-bottom: 6px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--foreground);
+}
+
+/* 这里的 .key 是课程副标题，不是数字高亮：全站那条 .key{color:--warning-ink!important}
+   把整句描述刷成橙色，压深一档也不合适，只在课程名下面这一处按次级文字处理 */
+.page-course-detail .groupPurchase_detail .toppro .des > .key {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    color: var(--muted-ink) !important;
+}
+
+/* 难度 / 学习人数：从 65px 通栏灰条改成一条轻量子带 */
+.page-course-detail .groupPurchase_detail .toppro .prize {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+    height: auto;
+    margin: 16px 0;
+    padding: 10px 14px;
+    line-height: 1.5;
+    font-size: 13px;
+    color: var(--muted-ink);
+    background: var(--muted);
+    border-radius: var(--radius-lg);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .prize .key {
+    font-size: 13px;
+}
+
+/* 参数表：两列网格，标签定宽右对齐，替代原来靠 &nbsp; 堆齐的写法 */
+.page-course-detail .groupPurchase_detail .toppro .parameter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 20px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: auto;
+    height: auto;
+    line-height: 22px;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter span {
+    width: auto;
+    float: none;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter .pram {
+    flex: none;
+    width: 68px;
+    white-space: nowrap;
+    color: var(--muted-ink);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter .word4 {
+    width: auto;
+}
+
+/* 学习用户头像行：占满整行，头像收成一组圆片 */
+.page-course-detail .groupPurchase_detail .toppro .parameter .piclist {
+    grid-column: 1 / -1;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter .pic {
+    display: block;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: var(--muted);
+    border-radius: var(--radius-pill);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .parameter .pic img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 收藏 / 开始学习：从绝对定位的悬浮层改成正常流的一组按钮 */
+.page-course-detail .groupPurchase_detail .toppro .btns {
+    position: static;
+    display: flex;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    margin-top: 20px;
+    padding: 0;
+    left: auto;
+    bottom: auto;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    float: none;
+    width: auto;
+    height: 40px;
+    margin: 0;
+    padding: 0 20px;
+    line-height: normal;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* 只给未收藏态上色：chrome.css 的 .collected 是四个收藏控件的变色真源，而本文件排在它后面加载，
+   同特异度下会赢它，所以这里用 :not(.collected) 让路，颜色仍由 chrome 一处说了算 */
+.page-course-detail .groupPurchase_detail .toppro .btn:not(.collected) {
+    color: var(--foreground);
+    background: var(--card);
+    border-color: var(--border);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .btn:not(.collected):hover {
+    color: var(--foreground);
+    background: var(--muted);
+    border-color: var(--ring);
+}
+
+/* 收藏按钮宽度由内容决定之后，style.css 里那颗钉在 left:20px 的星形会压到居中的文字上，
+   所以已收藏时把左内衬让出来；只改几何，颜色仍归 chrome.css */
+.page-course-detail .groupPurchase_detail .toppro .left .btn.colectgroupbtn.collected {
+    padding-left: 46px;
+}
+
+/* 开始学习 = 主按钮，实底近黑 */
+.page-course-detail .groupPurchase_detail .toppro .buy.btn {
+    color: var(--primary-foreground);
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .buy.btn:hover {
+    color: var(--primary-foreground);
+    background: var(--foreground);
+    border-color: var(--foreground);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .buy.btn a {
+    color: inherit;
+}
+
+/* ===== 机构栏：从灰色实心块改成卡片右栏 ===== */
+.page-course-detail .groupPurchase_detail .toppro .right {
+    flex: none;
+    box-sizing: border-box;
+    width: 280px;
+    height: auto;
+    padding-left: 24px;
+    overflow: visible;
+    float: none;
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .head {
+    width: auto;
+    height: auto;
+    padding: 0;
+    line-height: 1.4;
+    text-indent: 0;
+    background: transparent;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .head h1,
+.page-course-detail .groupPurchase_detail .toppro .right .head p {
+    padding: 0;
+    color: var(--foreground);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .head p {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted-ink);
+}
+
+/* 机构 logo 原图比例很杂（本页 200x188，站内还有 260x76）。按 100% 宽的盒子 contain
+   出图会让点击热区比看得见的图宽一大截，灰色托盘也跟着变成大片空白。
+   这里让 img 按原比例出图、元素盒等于画出来的那块，托盘收边包住图片再整体居中。 */
+.page-course-detail .groupPurchase_detail .toppro .right .pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 80px;
+    margin: 16px 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .pic a {
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 8px;
+    background: var(--muted);
+    border-radius: var(--radius-lg);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .pic img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 64px;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right h2 {
+    width: auto;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--foreground);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right h2:hover {
+    color: var(--brand-ink);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .btn {
+    width: auto;
+    margin: 16px 0 0;
+}
+
+/* 课程数 / 教师数 / 所在地区：三行两列，靠分隔线分行 */
+.page-course-detail .groupPurchase_detail .toppro .right .clear {
+    width: auto;
+    margin: 16px 0 0;
+    padding: 0;
+    line-height: normal;
+    color: inherit;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .clear ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .clear li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .clear li:first-child {
+    border-top: 0;
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .clear .lbl {
+    color: var(--muted-ink);
+}
+
+.page-course-detail .groupPurchase_detail .toppro .right .clear .val {
+    color: var(--foreground);
+}
+
+/* ===== 下半区：课程正文 + 相关推荐，两张卡片并排 ===== */
+.page-course-detail .list.groupPurchase_detail_pro {
+    margin-top: 24px;
+    margin-bottom: 44px;
+    min-height: 0;
+}
+
+.page-course-detail .groupPurchase_detail_pro .left {
+    box-sizing: border-box;
+    width: 900px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.page-course-detail .groupPurchase_detail_pro .right {
+    box-sizing: border-box;
+    width: 280px;
+    line-height: normal;
+    margin-bottom: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+/* 只有一个条目的 tab 就当卡片标题处理：去掉遗留的下划线，免得和卡片头部的分隔线叠成两条 */
+.page-course-detail .groupPurchase_detail_pro .left .head,
+.page-course-detail .groupPurchase_detail_pro .right .head {
+    height: auto;
+    padding: 14px 20px;
+    line-height: 1.4;
+    text-indent: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_header {
+    width: auto;
+    height: auto;
+    line-height: normal;
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_header li {
+    display: block;
+    float: none;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-indent: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+    cursor: default;
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_header .active {
+    border-bottom: 0;
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* 正文是后台富文本编辑出来的 HTML，这里只兜排版，不假设里面有什么标签 */
+.page-course-detail .groupPurchase_detail_pro .tab_cont {
+    width: auto;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--foreground);
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_cont p {
+    margin: 0 0 12px;
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_cont h1,
+.page-course-detail .groupPurchase_detail_pro .tab_cont h2,
+.page-course-detail .groupPurchase_detail_pro .tab_cont h3,
+.page-course-detail .groupPurchase_detail_pro .tab_cont h4 {
+    margin: 18px 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_cont img,
+.page-course-detail .groupPurchase_detail_pro .tab_cont video,
+.page-course-detail .groupPurchase_detail_pro .tab_cont iframe,
+.page-course-detail .groupPurchase_detail_pro .tab_cont embed,
+.page-course-detail .groupPurchase_detail_pro .tab_cont object {
+    max-width: 100%;
+    height: auto;
+}
+
+.page-course-detail .groupPurchase_detail_pro .tab_cont .pic {
+    width: 100%;
+    height: auto;
+    margin: 16px 0;
+}
+
+/* 相关推荐：跟列表页右栏同一种小图条（96x54 封面 + 两行标题） */
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend {
+    width: auto;
+    height: auto;
+    padding: 0 20px;
+    overflow: visible;
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dl {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dl:first-child {
+    border-top: 0;
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dt {
+    flex: none;
+    width: 96px;
+    height: 54px;
+    overflow: hidden;
+    background: var(--muted);
+    border-radius: var(--radius-sm);
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dt a,
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dt img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dd {
+    flex: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dd h2 {
+    height: 40px;
+    overflow: hidden;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dd a:hover h2 {
+    color: var(--brand-ink);
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dd span {
+    display: block;
+    position: static;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted-ink);
+}
+
+.page-course-detail .groupPurchase_detail_pro .right .group_recommend dd .key {
+    font-style: normal;
+    font-size: 12px;
+}
+
+.page-course-detail .cd-empty {
+    padding: 18px 20px;
+    font-size: 13px;
+    color: var(--muted-ink);
+}
